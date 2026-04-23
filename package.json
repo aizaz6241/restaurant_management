@@ -4,6 +4,6 @@
   "description": "Root package.json for Render deployment",
   "scripts": {
     "start": "cd backend && npm start",
-    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build"
+    "build": "cd backend && npm install && cd ../frontend && npm install --include=dev && npm run build"
   }
 }
