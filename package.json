@@ -1,0 +1,9 @@
+{
+  "name": "restaurant-management-deploy",
+  "version": "1.0.0",
+  "description": "Root package.json for Render deployment",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build"
+  }
+}
