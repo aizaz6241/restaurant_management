@@ -15,7 +15,7 @@ const Header = () => {
       <header className="navbar glass">
         <div className="container" style={{ position: 'relative' }}>
           <Link to="/" className="logo" onClick={closeMenu}>
-            <span role="img" aria-label="pizza">🍕</span> Gourmet Bites
+            <span role="img" aria-label="lion">🦁</span> Sher Afghan
           </Link>
           
           <nav className={`nav-links ${isMobileMenuOpen ? 'open' : ''}`}>

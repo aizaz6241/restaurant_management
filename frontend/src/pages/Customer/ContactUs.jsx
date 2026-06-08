@@ -35,8 +35,10 @@ const ContactUs = () => {
                 <div>
                   <h3 style={{ marginBottom: '0.25rem' }}>Our Location</h3>
                   <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>
-                    123 Restaurant Row,<br/>
-                    Culinary District, NY 10001
+                    <a href="https://maps.app.goo.gl/zrCgSokhu133dTRH8" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>
+                      Arjan-Dubailand, Al Barsha South 3<br/>
+                      near Butterfly Garden - Dubai
+                    </a>
                   </p>
                 </div>
               </div>
@@ -47,8 +49,12 @@ const ContactUs = () => {
                 </div>
                 <div>
                   <h3 style={{ marginBottom: '0.25rem' }}>Phone Number</h3>
-                  <p style={{ color: 'var(--text-muted)' }}>+1 (555) 123-4567</p>
-                  <p style={{ color: 'var(--text-muted)' }}>+1 (555) 987-6543</p>
+                  <p style={{ color: 'var(--text-muted)' }}>
+                    <a href="tel:+971567426501" style={{ color: 'inherit', textDecoration: 'none' }}>+971 56 742 6501</a>
+                  </p>
+                  <p style={{ color: 'var(--text-muted)' }}>
+                    <a href="tel:+971525624961" style={{ color: 'inherit', textDecoration: 'none' }}>+971 52 562 4961</a>
+                  </p>
                 </div>
               </div>
 
@@ -58,9 +64,34 @@ const ContactUs = () => {
                 </div>
                 <div>
                   <h3 style={{ marginBottom: '0.25rem' }}>Email Address</h3>
-                  <p style={{ color: 'var(--text-muted)' }}>hello@gourmetbites.com</p>
-                  <p style={{ color: 'var(--text-muted)' }}>support@gourmetbites.com</p>
+                  <p style={{ color: 'var(--text-muted)' }}>info@sherafghanrestaurant.com</p>
+                  <p style={{ color: 'var(--text-muted)' }}>support@sherafghanrestaurant.com</p>
                 </div>
+              </div>
+
+              <div style={{ marginTop: '1rem', paddingLeft: '4.5rem' }}>
+                <a 
+                  href="https://www.google.com/search?sca_esv=92bb7c0feee8c152&rlz=1C1VDKB_en-GBPK1167PK1167&sxsrf=ANbL-n4TXsgmQoNBS_e1FIXUtbnMev7ykQ:1780937438879&q=sher+afghan+restaurant" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="btn btn-outline" 
+                  style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    textDecoration: 'none', 
+                    fontSize: '0.9rem',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--primary)',
+                    color: 'var(--primary)',
+                    background: 'transparent',
+                    fontWeight: '600',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  View on Google Business
+                </a>
               </div>
             </div>
           </div>

@@ -12,7 +12,7 @@ const AboutUs = () => {
             Our Story
           </div>
           <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem', color: 'var(--text-main)' }}>
-            About Gourmet Bites
+            About Sher Afghan Restaurant
           </h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
             Born out of a passion for high-quality, delicious food. We believe that everyone deserves to experience restaurant-quality meals, whether they are dining out or eating in the comfort of their home.
