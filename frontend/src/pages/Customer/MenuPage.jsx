@@ -97,7 +97,7 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
     : !!(item.discountPrice && item.discountPrice > 0);
 
   // Solar Orbit coordinate calculations for side items (larger size)
-  const radius = 98; // orbit radius (fits cleanly within 200px container)
+  const radius = 86; // orbit radius (fits cleanly within 180px container)
   const totalSides = item.sides ? item.sides.length : 0;
   const sidePositions = item.sides ? item.sides.map((side, idx) => {
     // Distribute angles evenly, starting at -90deg (top center)

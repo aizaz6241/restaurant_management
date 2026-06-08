@@ -392,7 +392,7 @@ button {
 }
 
 .menu-card-content {
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -422,13 +422,18 @@ button {
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
   line-height: 1.5;
+  height: 3rem; /* 1.5 line-height * 2 lines = 3rem */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Solar Orbit System Styles */
 .orbit-container {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -472,8 +477,8 @@ button {
 /* Orbit ring line */
 .orbit-ring {
   position: absolute;
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   border: 1.5px dashed rgba(248, 113, 113, 0.25);
   border-radius: 50%;
   z-index: 2;
