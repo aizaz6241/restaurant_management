@@ -1,5 +1,6 @@
 const SideItem = require('../models/SideItem');
 const MenuItem = require('../models/MenuItem');
+const { deleteFileFromUploadThing } = require('../utils/uploadthing');
 
 // @desc    Get all side items
 // @route   GET /api/sides
@@ -40,6 +41,11 @@ const updateSide = async (req, res) => {
     const sideItem = await SideItem.findById(req.params.id);
 
     if (sideItem) {
+      // Delete old image from UploadThing if a new one is uploaded
+      if (image !== undefined && image !== sideItem.image) {
+        await deleteFileFromUploadThing(sideItem.image);
+      }
+
       sideItem.name = name === undefined ? sideItem.name : name;
       sideItem.image = image === undefined ? sideItem.image : image;
       sideItem.price = price === undefined ? sideItem.price : price;
@@ -68,6 +74,9 @@ const deleteSide = async (req, res) => {
         { $pull: { sides: req.params.id } }
       );
       
+      // Delete image from UploadThing storage
+      await deleteFileFromUploadThing(sideItem.image);
+
       await sideItem.deleteOne();
       res.json({ message: 'Side item removed' });
     } else {

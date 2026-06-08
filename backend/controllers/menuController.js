@@ -1,4 +1,5 @@
 const MenuItem = require('../models/MenuItem');
+const { deleteFileFromUploadThing } = require('../utils/uploadthing');
 
 // @desc    Get all menu items
 // @route   GET /api/menu
@@ -48,6 +49,11 @@ const updateMenuItem = async (req, res) => {
     const menuItem = await MenuItem.findById(req.params.id);
 
     if (menuItem) {
+      // Delete old image from UploadThing if a new one is uploaded
+      if (image !== undefined && image !== menuItem.image) {
+        await deleteFileFromUploadThing(menuItem.image);
+      }
+
       menuItem.name = name === undefined ? menuItem.name : name;
       menuItem.description = description === undefined ? menuItem.description : description;
       menuItem.price = price === undefined ? menuItem.price : price;
@@ -79,6 +85,8 @@ const deleteMenuItem = async (req, res) => {
     const menuItem = await MenuItem.findById(req.params.id);
 
     if (menuItem) {
+      // Delete image from UploadThing storage
+      await deleteFileFromUploadThing(menuItem.image);
       await menuItem.deleteOne();
       res.json({ message: 'Menu item removed' });
     } else {
