@@ -83,8 +83,8 @@ const MenuCard = ({ item, addToCart }) => {
   const basePrice = selectedVersion ? selectedVersion.price : item.price;
 
   const isDiscounted = selectedVersion
-    ? (selectedVersion.discountPrice && selectedVersion.discountPrice > 0)
-    : (item.discountPrice && item.discountPrice > 0);
+    ? !!(selectedVersion.discountPrice && selectedVersion.discountPrice > 0)
+    : !!(item.discountPrice && item.discountPrice > 0);
 
   return (
     <div className="menu-card" style={{ position: 'relative' }}>
@@ -99,8 +99,8 @@ const MenuCard = ({ item, addToCart }) => {
         </div>
       )}
       
-      <div className="menu-card-img-wrapper" style={{ height: '200px' }}>
-        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div className="menu-card-img-wrapper" style={{ height: '200px', backgroundColor: 'var(--bg-color)' }}>
+        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         {!item.isAvailable && (
           <div style={{ position: 'absolute', top: '10px', right: '10px' }} className="badge badge-danger">
             Out of Stock
