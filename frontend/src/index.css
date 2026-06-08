@@ -422,6 +422,123 @@ button {
   line-height: 1.5;
 }
 
+/* Solar Orbit System Styles */
+.orbit-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: radial-gradient(circle, rgba(248, 113, 113, 0.05) 0%, transparent 70%);
+}
+
+/* Central Food Image (Sun) */
+.sun-food-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 15px rgba(248, 113, 113, 0.2);
+  z-index: 5;
+  background-color: white;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease;
+}
+
+.sun-food {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.menu-card:hover .sun-food-wrapper {
+  transform: scale(1.08) rotate(3deg);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 0 25px rgba(248, 113, 113, 0.35);
+}
+
+.menu-card:hover .sun-food {
+  transform: scale(1.05);
+}
+
+/* Orbit ring line */
+.orbit-ring {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border: 1.5px dashed rgba(248, 113, 113, 0.25);
+  border-radius: 50%;
+  z-index: 2;
+  animation: rotateOrbit 40s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotateOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Planet Side Items */
+.planet-side-wrapper {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+  cursor: pointer;
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease;
+}
+
+.planet-side-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.planet-side-wrapper:hover {
+  transform: scale(1.2) !important;
+  border-color: var(--primary);
+  z-index: 20;
+}
+
+/* Tooltip on hover */
+.planet-side-wrapper::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: rgba(17, 24, 39, 0.9);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-md);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 30;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.planet-side-wrapper:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
 /* Cart Drawer */
 .cart-overlay {
   position: fixed;

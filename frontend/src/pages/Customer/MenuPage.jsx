@@ -86,6 +86,23 @@ const MenuCard = ({ item, addToCart }) => {
     ? !!(selectedVersion.discountPrice && selectedVersion.discountPrice > 0)
     : !!(item.discountPrice && item.discountPrice > 0);
 
+  // Solar Orbit coordinate calculations for side items
+  const radius = 76; // orbit radius (fits cleanly within 170px container)
+  const totalSides = item.sides ? item.sides.length : 0;
+  const sidePositions = item.sides ? item.sides.map((side, idx) => {
+    // Distribute angles evenly, starting at -90deg (top center)
+    const angle = (idx * 2 * Math.PI) / totalSides - Math.PI / 2;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return {
+      side,
+      style: {
+        left: `calc(50% + ${x}px - 19px)`, // 19px is half of 38px width
+        top: `calc(50% + ${y}px - 19px)`
+      }
+    };
+  }) : [];
+
   return (
     <div className="menu-card" style={{ position: 'relative' }}>
       {isDiscounted && !item.isDeal && (
@@ -99,10 +116,30 @@ const MenuCard = ({ item, addToCart }) => {
         </div>
       )}
       
-      <div className="menu-card-img-wrapper" style={{ height: '200px', backgroundColor: 'var(--bg-color)' }}>
-        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      {/* Solar System Orbit Presentation */}
+      <div className="orbit-container">
+        {/* Dashed Orbit Ring */}
+        <div className="orbit-ring"></div>
+
+        {/* Central Sun (Main Food Image) */}
+        <div className="sun-food-wrapper">
+          <img src={item.image} alt={item.name} className="sun-food" />
+        </div>
+
+        {/* Orbiting Planets (Sides / Add-ons) */}
+        {sidePositions.map((pos) => (
+          <div 
+            key={pos.side._id} 
+            className="planet-side-wrapper" 
+            style={pos.style}
+            data-tooltip={pos.side.name + (pos.side.price > 0 ? ` (+AED ${pos.side.price.toFixed(2)})` : ' (Included)')}
+          >
+            <img src={pos.side.image} alt={pos.side.name} className="planet-side-img" />
+          </div>
+        ))}
+
         {!item.isAvailable && (
-          <div style={{ position: 'absolute', top: '10px', right: '10px' }} className="badge badge-danger">
+          <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 12 }} className="badge badge-danger">
             Out of Stock
           </div>
         )}
@@ -166,38 +203,6 @@ const MenuCard = ({ item, addToCart }) => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-
-        {item.sides && item.sides.length > 0 && (
-          <div style={{ marginBottom: '1rem' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Served With:</div>
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-              {item.sides.map((side) => (
-                <div 
-                  key={side._id} 
-                  title={side.name + (side.price > 0 ? ` (+$${side.price.toFixed(2)})` : ' (Included)')}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.4rem', 
-                    background: 'var(--bg-card)', 
-                    padding: '0.25rem 0.5rem', 
-                    borderRadius: '20px', 
-                    border: '1px solid var(--border)',
-                    fontSize: '0.75rem',
-                    fontWeight: '500'
-                  }}
-                >
-                  <img 
-                    src={side.image} 
-                    alt={side.name} 
-                    style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} 
-                  />
-                  <span>{side.name}</span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
         
