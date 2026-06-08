@@ -158,9 +158,10 @@ const MenuManager = () => {
       </div>
 
       {formVisible && (
-        <div className="glass" style={{ padding: '2rem', borderRadius: 'var(--radius-lg)', marginBottom: '2rem' }}>
-          <h3>{editingId ? 'Edit Menu Item' : 'Add New Item'}</h3>
-          <form onSubmit={handleSubmit} style={{ marginTop: '1.5rem' }}>
+        <div className="admin-modal-overlay" onClick={resetForm}>
+          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '1.5rem' }}>{editingId ? 'Edit Menu Item' : 'Add New Item'}</h3>
+            <form onSubmit={handleSubmit}>
             <div className="grid-cols-2">
               <div className="input-group">
                 <label className="input-label">Name</label>
@@ -319,6 +320,7 @@ const MenuManager = () => {
             </div>
           </form>
         </div>
+      </div>
       )}
 
       <div className="table-container">

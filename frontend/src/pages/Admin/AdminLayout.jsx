@@ -20,7 +20,7 @@ const AdminLayout = () => {
   return (
     <div className="admin-layout">
       {/* Mobile Header for Admin */}
-      <div className="admin-mobile-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="admin-mobile-header" style={{ alignItems: 'center', gap: '0.75rem' }}>
         <img src={logoImg} alt="Sher Afghan Logo" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'cover' }} />
         <h2 style={{ color: 'var(--primary)', fontFamily: 'Outfit', margin: 0, fontSize: '1.25rem' }}>Admin Portal</h2>
         <button className="mobile-menu-btn" onClick={toggleMenu} style={{ marginLeft: 'auto' }}>
