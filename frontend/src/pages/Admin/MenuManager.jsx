@@ -149,12 +149,74 @@ const MenuManager = () => {
     });
   };
   return (
-    <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Menu Management</h1>
-        <button className="btn btn-primary" onClick={() => { resetForm(); setFormVisible(true); }}>
-          <FiPlus /> Add New Item
-        </button>
+    <>
+      <div className="animate-fade-in">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h1>Menu Management</h1>
+          <button className="btn btn-primary" onClick={() => { resetForm(); setFormVisible(true); }}>
+            <FiPlus /> Add New Item
+          </button>
+        </div>
+
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Availability</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map(item => (
+                <tr key={item._id}>
+                  <td>
+                    <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                  </td>
+                  <td>
+                    <div style={{ fontWeight: 'bold' }}>
+                      {item.name}
+                      {item.isDeal && <span className="badge badge-primary" style={{ marginLeft: '0.5rem' }}>Deal</span>}
+                    </div>
+                    {item.discountPrice > 0 && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--danger)', fontWeight: 'bold' }}>Discounted!</div>
+                    )}
+                  </td>
+                  <td>{item.category}</td>
+                  <td>
+                    {item.discountPrice > 0 ? (
+                      <div>
+                        <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', marginRight: '0.5rem', fontSize: '0.875rem' }}>AED {item.price.toFixed(2)}</span>
+                        <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.discountPrice.toFixed(2)}</span>
+                      </div>
+                    ) : (
+                      <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.price.toFixed(2)}</span>
+                    )}
+                  </td>
+                  <td>
+                    <span className={`badge badge-${item.isAvailable ? 'success' : 'danger'}`}>
+                      {item.isAvailable ? 'Available' : 'Out of Stock'}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button className="btn-icon" style={{ color: 'var(--text-main)' }} onClick={() => handleEdit(item)}><FiEdit2 /></button>
+                      <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={() => handleDelete(item._id)}><FiTrash2 /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {items.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No menu items found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {formVisible && (
@@ -162,227 +224,167 @@ const MenuManager = () => {
           <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
             <h3 style={{ marginBottom: '1.5rem' }}>{editingId ? 'Edit Menu Item' : 'Add New Item'}</h3>
             <form onSubmit={handleSubmit}>
-            <div className="grid-cols-2">
-              <div className="input-group">
-                <label className="input-label">Name</label>
-                <input type="text" className="input-field" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-              </div>
-              <div className="input-group">
-                <label className="input-label">Category</label>
-                <input type="text" className="input-field" required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} />
-              </div>
+              <div className="grid-cols-2">
+                <div className="input-group">
+                  <label className="input-label">Name</label>
+                  <input type="text" className="input-field" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                </div>
+                <div className="input-group">
+                  <label className="input-label">Category</label>
+                  <input type="text" className="input-field" required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} />
+                </div>
 
-              <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', gridColumn: 'span 2' }}>
-                <input type="checkbox" id="hasVersions" checked={formData.hasVersions} onChange={(e) => setFormData({...formData, hasVersions: e.target.checked})} />
-                <label htmlFor="hasVersions" style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary-dark)' }}>This item has multiple versions/sizes (e.g. Half, Full, 1 KG)</label>
-              </div>
+                <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', gridColumn: 'span 2' }}>
+                  <input type="checkbox" id="hasVersions" checked={formData.hasVersions} onChange={(e) => setFormData({...formData, hasVersions: e.target.checked})} />
+                  <label htmlFor="hasVersions" style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary-dark)' }}>This item has multiple versions/sizes (e.g. Half, Full, 1 KG)</label>
+                </div>
 
-              {!formData.hasVersions ? (
-                <>
-                  <div className="input-group">
-                    <label className="input-label">Standard Price (AED)</label>
-                    <input type="number" step="0.01" className="input-field" required={!formData.hasVersions} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
-                  </div>
-                  <div className="input-group">
-                    <label className="input-label">Discount Price (AED) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
-                    <input type="number" step="0.01" className="input-field" value={formData.discountPrice} onChange={(e) => setFormData({...formData, discountPrice: e.target.value})} />
-                  </div>
-                </>
-              ) : (
-                <div style={{ gridColumn: 'span 2', background: '#f9fafb', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h4 style={{ margin: 0 }}>Versions & Prices</h4>
-                    <button type="button" className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} onClick={handleAddVersion}>
-                      + Add Version
-                    </button>
-                  </div>
-                  {formData.versions.map((ver, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1rem', borderBottom: '1px dashed var(--border)', paddingBottom: '1rem' }}>
-                      <div className="input-group" style={{ flex: 2, marginBottom: 0 }}>
-                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Version Name (e.g., Half, Full)</label>
-                        <input type="text" className="input-field" style={{ padding: '0.5rem' }} required value={ver.name} placeholder="Half" onChange={(e) => handleVersionChange(idx, 'name', e.target.value)} />
-                      </div>
-                      <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
-                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Price (AED)</label>
-                        <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} required value={ver.price} placeholder="10.00" onChange={(e) => handleVersionChange(idx, 'price', e.target.value)} />
-                      </div>
-                      <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
-                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Discount Price (AED)</label>
-                        <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} value={ver.discountPrice} placeholder="0.00" onChange={(e) => handleVersionChange(idx, 'discountPrice', e.target.value)} />
-                      </div>
-                      <button type="button" className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer' }} onClick={() => handleRemoveVersion(idx)}>
-                        Remove
+                {!formData.hasVersions ? (
+                  <>
+                    <div className="input-group">
+                      <label className="input-label">Standard Price (AED)</label>
+                      <input type="number" step="0.01" className="input-field" required={!formData.hasVersions} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+                    </div>
+                    <div className="input-group">
+                      <label className="input-label">Discount Price (AED) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
+                      <input type="number" step="0.01" className="input-field" value={formData.discountPrice} onChange={(e) => setFormData({...formData, discountPrice: e.target.value})} />
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ gridColumn: 'span 2', background: '#f9fafb', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                      <h4 style={{ margin: 0 }}>Versions & Prices</h4>
+                      <button type="button" className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} onClick={handleAddVersion}>
+                        + Add Version
                       </button>
                     </div>
-                  ))}
-                  {formData.versions.length === 0 && (
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No versions added yet. Click "+ Add Version" to define one.</p>
-                  )}
-                </div>
-              )}
-
-              <div className="input-group" style={{ gridColumn: 'span 2' }}>
-                <label className="input-label">Image (Upload or Image URL)</label>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <input type="text" className="input-field" required value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} />
-                  <div style={{ flexShrink: 0 }}>
-                    <UploadButton
-                      endpoint="imageUploader"
-                      onClientUploadComplete={(res) => {
-                        if (res && res[0]) {
-                          setFormData({...formData, image: res[0].url});
-                        }
-                      }}
-                      onUploadError={(error) => {
-                        alert(`ERROR! ${error.message}`);
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="input-group">
-              <label className="input-label">Description</label>
-              <textarea className="input-field" required rows="3" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}></textarea>
-            </div>
-
-            <div style={{ border: '1px solid var(--border)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', background: 'white' }}>
-              <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: formData.isDeal ? '1.5rem' : '0' }}>
-                <input type="checkbox" id="isDeal" checked={formData.isDeal} onChange={(e) => setFormData({...formData, isDeal: e.target.checked})} />
-                <label htmlFor="isDeal" style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary-dark)' }}>Make this item a Combo Deal</label>
-              </div>
-
-              {formData.isDeal && (
-                <div>
-                  <label className="input-label">Select Items Included in this Deal:</label>
-                  <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
-                    {items.filter(i => !i.isDeal && i._id !== editingId).map(menuItem => {
-                      const isChecked = formData.dealItems.some(d => d.menuItem === menuItem._id);
-                      return (
-                        <div key={menuItem._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
-                          <input 
-                            type="checkbox" 
-                            id={`deal-${menuItem._id}`} 
-                            checked={isChecked}
-                            onChange={() => handleDealItemToggle(menuItem._id)}
-                          />
-                          <label htmlFor={`deal-${menuItem._id}`} style={{ cursor: 'pointer', display:'flex', alignItems:'center', gap:'1rem' }}>
-                            <img src={menuItem.image} alt={menuItem.name} style={{ width: '30px', height: '30px', borderRadius: '4px', objectFit: 'cover' }} />
-                            {menuItem.name} <span style={{ color: 'var(--text-muted)' }}>(AED {menuItem.price})</span>
-                          </label>
+                    {formData.versions.map((ver, idx) => (
+                      <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1rem', borderBottom: '1px dashed var(--border)', paddingBottom: '1rem' }}>
+                        <div className="input-group" style={{ flex: 2, marginBottom: 0 }}>
+                          <label className="input-label" style={{ fontSize: '0.8rem' }}>Version Name (e.g., Half, Full)</label>
+                          <input type="text" className="input-field" style={{ padding: '0.5rem' }} required value={ver.name} placeholder="Half" onChange={(e) => handleVersionChange(idx, 'name', e.target.value)} />
                         </div>
-                      )
-                    })}
-                    {items.filter(i => !i.isDeal && i._id !== editingId).length === 0 && (
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No standalone items available to add to a deal yet.</p>
+                        <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
+                          <label className="input-label" style={{ fontSize: '0.8rem' }}>Price (AED)</label>
+                          <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} required value={ver.price} placeholder="10.00" onChange={(e) => handleVersionChange(idx, 'price', e.target.value)} />
+                        </div>
+                        <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
+                          <label className="input-label" style={{ fontSize: '0.8rem' }}>Discount Price (AED)</label>
+                          <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} value={ver.discountPrice} placeholder="0.00" onChange={(e) => handleVersionChange(idx, 'discountPrice', e.target.value)} />
+                        </div>
+                        <button type="button" className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer' }} onClick={() => handleRemoveVersion(idx)}>
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    {formData.versions.length === 0 && (
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No versions added yet. Click "+ Add Version" to define one.</p>
                     )}
                   </div>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Note: The Deal price is set by the "Standard Price" & "Discount Price" fields above. It does not automatically sum up.</p>
-                </div>
-              )}
-            </div>
+                )}
 
-            <div style={{ border: '1px solid var(--border)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', background: 'white' }}>
-              <label className="input-label" style={{ fontWeight: 'bold', color: 'var(--primary-dark)', marginBottom: '0.75rem', display: 'block' }}>Include Additional Sides (Raita, Salad, Soup, etc.)</label>
-              <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
-                {sidesList.map(side => {
-                  const isChecked = formData.sides.includes(side._id);
-                  return (
-                    <div key={side._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
-                      <input 
-                        type="checkbox" 
-                        id={`side-${side._id}`} 
-                        checked={isChecked}
-                        onChange={() => handleSideToggle(side._id)}
+                <div className="input-group" style={{ gridColumn: 'span 2' }}>
+                  <label className="input-label">Image (Upload or Image URL)</label>
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <input type="text" className="input-field" required value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} />
+                    <div style={{ flexShrink: 0 }}>
+                      <UploadButton
+                        endpoint="imageUploader"
+                        onClientUploadComplete={(res) => {
+                          if (res && res[0]) {
+                            setFormData({...formData, image: res[0].url});
+                          }
+                        }}
+                        onUploadError={(error) => {
+                          alert(`ERROR! ${error.message}`);
+                        }}
                       />
-                      <label htmlFor={`side-${side._id}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <img src={side.image} alt={side.name} style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
-                        {side.name} {side.price > 0 && <span style={{ color: 'var(--primary)' }}>(+AED {side.price.toFixed(2)})</span>}
-                      </label>
                     </div>
-                  );
-                })}
-                {sidesList.length === 0 && (
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No side items created yet. Go to "Sides/Addons" to create some.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="input-group">
+                <label className="input-label">Description</label>
+                <textarea className="input-field" required rows="3" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}></textarea>
+              </div>
+
+              <div style={{ border: '1px solid var(--border)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', background: 'white' }}>
+                <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: formData.isDeal ? '1.5rem' : '0' }}>
+                  <input type="checkbox" id="isDeal" checked={formData.isDeal} onChange={(e) => setFormData({...formData, isDeal: e.target.checked})} />
+                  <label htmlFor="isDeal" style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary-dark)' }}>Make this item a Combo Deal</label>
+                </div>
+
+                {formData.isDeal && (
+                  <div>
+                    <label className="input-label">Select Items Included in this Deal:</label>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                      {items.filter(i => !i.isDeal && i._id !== editingId).map(menuItem => {
+                        const isChecked = formData.dealItems.some(d => d.menuItem === menuItem._id);
+                        return (
+                          <div key={menuItem._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
+                            <input 
+                              type="checkbox" 
+                              id={`deal-${menuItem._id}`} 
+                              checked={isChecked}
+                              onChange={() => handleDealItemToggle(menuItem._id)}
+                            />
+                            <label htmlFor={`deal-${menuItem._id}`} style={{ cursor: 'pointer', display:'flex', alignItems:'center', gap:'1rem' }}>
+                              <img src={menuItem.image} alt={menuItem.name} style={{ width: '30px', height: '30px', borderRadius: '4px', objectFit: 'cover' }} />
+                              {menuItem.name} <span style={{ color: 'var(--text-muted)' }}>(AED {menuItem.price})</span>
+                            </label>
+                          </div>
+                        )
+                      })}
+                      {items.filter(i => !i.isDeal && i._id !== editingId).length === 0 && (
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No standalone items available to add to a deal yet.</p>
+                      )}
+                    </div>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Note: The Deal price is set by the "Standard Price" & "Discount Price" fields above. It does not automatically sum up.</p>
+                  </div>
                 )}
               </div>
-            </div>
 
-            <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <input type="checkbox" id="isAvailable" checked={formData.isAvailable} onChange={(e) => setFormData({...formData, isAvailable: e.target.checked})} />
-              <label htmlFor="isAvailable" style={{ fontWeight: '500', cursor: 'pointer' }}>Item is Available for Ordering</label>
-            </div>
+              <div style={{ border: '1px solid var(--border)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', background: 'white' }}>
+                <label className="input-label" style={{ fontWeight: 'bold', color: 'var(--primary-dark)', marginBottom: '0.75rem', display: 'block' }}>Include Additional Sides (Raita, Salad, Soup, etc.)</label>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                  {sidesList.map(side => {
+                    const isChecked = formData.sides.includes(side._id);
+                    return (
+                      <div key={side._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
+                        <input 
+                          type="checkbox" 
+                          id={`side-${side._id}`} 
+                          checked={isChecked}
+                          onChange={() => handleSideToggle(side._id)}
+                        />
+                        <label htmlFor={`side-${side._id}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <img src={side.image} alt={side.name} style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
+                          {side.name} {side.price > 0 && <span style={{ color: 'var(--primary)' }}>(+AED {side.price.toFixed(2)})</span>}
+                        </label>
+                      </div>
+                    );
+                  })}
+                  {sidesList.length === 0 && (
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No side items created yet. Go to "Sides/Addons" to create some.</p>
+                  )}
+                </div>
+              </div>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-              <button type="button" className="btn btn-outline" onClick={resetForm}>Cancel</button>
-              <button type="submit" className="btn btn-primary">{editingId ? 'Update Item' : 'Save Item'}</button>
-            </div>
-          </form>
+              <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input type="checkbox" id="isAvailable" checked={formData.isAvailable} onChange={(e) => setFormData({...formData, isAvailable: e.target.checked})} />
+                <label htmlFor="isAvailable" style={{ fontWeight: '500', cursor: 'pointer' }}>Item is Available for Ordering</label>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button type="button" className="btn btn-outline" onClick={resetForm}>Cancel</button>
+                <button type="submit" className="btn btn-primary">{editingId ? 'Update Item' : 'Save Item'}</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
       )}
-
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Availability</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(item => (
-              <tr key={item._id}>
-                <td>
-                  <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
-                </td>
-                <td>
-                  <div style={{ fontWeight: 'bold' }}>
-                    {item.name}
-                    {item.isDeal && <span className="badge badge-primary" style={{ marginLeft: '0.5rem' }}>Deal</span>}
-                  </div>
-                  {item.discountPrice > 0 && (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--danger)', fontWeight: 'bold' }}>Discounted!</div>
-                  )}
-                </td>
-                <td>{item.category}</td>
-                <td>
-                  {item.discountPrice > 0 ? (
-                    <div>
-                      <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', marginRight: '0.5rem', fontSize: '0.875rem' }}>AED {item.price.toFixed(2)}</span>
-                      <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.discountPrice.toFixed(2)}</span>
-                    </div>
-                  ) : (
-                    <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.price.toFixed(2)}</span>
-                  )}
-                </td>
-                <td>
-                  <span className={`badge badge-${item.isAvailable ? 'success' : 'danger'}`}>
-                    {item.isAvailable ? 'Available' : 'Out of Stock'}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn-icon" style={{ color: 'var(--text-main)' }} onClick={() => handleEdit(item)}><FiEdit2 /></button>
-                    <button className="btn-icon" style={{ color: 'var(--danger)' }} onClick={() => handleDelete(item._id)}><FiTrash2 /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {items.length === 0 && (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No menu items found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </>
   );
 };
 
