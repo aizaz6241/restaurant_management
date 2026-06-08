@@ -81,7 +81,9 @@ const OrdersManager = () => {
                 </td>
                 <td>
                   {order.items.map(item => (
-                    <div key={item._id} style={{ fontSize: '0.85rem' }}>{item.quantity}x {item.name}</div>
+                    <div key={item._id} style={{ fontSize: '0.85rem' }}>
+                      {item.quantity}x {item.name} {item.version && <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>({item.version})</span>}
+                    </div>
                   ))}
                 </td>
                 <td style={{ fontWeight: 'bold', color: 'var(--primary)' }}>${order.totalAmount.toFixed(2)}</td>

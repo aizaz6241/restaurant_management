@@ -28,24 +28,29 @@ const CartDrawer = () => {
             </div>
           ) : (
             cart.map((item) => (
-              <div key={item.menuItem} className="cart-item">
+              <div key={item.menuItem + (item.version || '')} className="cart-item">
                 <img src={item.image} alt={item.name} className="cart-item-img" />
                 <div className="cart-item-info">
-                  <h4 style={{ marginBottom: '0.25rem' }}>{item.name}</h4>
+                  <h4 style={{ marginBottom: '0.1rem' }}>{item.name}</h4>
+                  {item.version && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
+                      Size: {item.version}
+                    </div>
+                  )}
                   <p style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                   <div className="cart-item-actions">
-                    <button className="qty-btn" onClick={() => updateQuantity(item.menuItem, item.quantity - 1)}>
+                    <button className="qty-btn" onClick={() => updateQuantity(item.menuItem, item.version, item.quantity - 1)}>
                       <FiMinus size={14} />
                     </button>
                     <span style={{ fontSize: '0.875rem', fontWeight: 'bold', width: '20px', textAlign: 'center' }}>
                       {item.quantity}
                     </span>
-                    <button className="qty-btn" onClick={() => updateQuantity(item.menuItem, item.quantity + 1)}>
+                    <button className="qty-btn" onClick={() => updateQuantity(item.menuItem, item.version, item.quantity + 1)}>
                       <FiPlus size={14} />
                     </button>
-                    <button style={{ marginLeft: 'auto', color: 'var(--danger)' }} onClick={() => removeFromCart(item.menuItem)}>
+                    <button style={{ marginLeft: 'auto', color: 'var(--danger)' }} onClick={() => removeFromCart(item.menuItem, item.version)}>
                       <FiTrash2 size={16} />
                     </button>
                   </div>

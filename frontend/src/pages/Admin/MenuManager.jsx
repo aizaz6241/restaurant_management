@@ -21,6 +21,8 @@ const MenuManager = () => {
     isDeal: false,
     dealItems: [],
     sides: [],
+    hasVersions: false,
+    versions: [],
   });
 
   const fetchMenu = async () => {
@@ -49,7 +51,8 @@ const MenuManager = () => {
   const resetForm = () => {
     setFormData({ 
       name: '', description: '', price: '', image: '', category: '', 
-      isAvailable: true, discountPrice: 0, isDeal: false, dealItems: [], sides: [] 
+      isAvailable: true, discountPrice: 0, isDeal: false, dealItems: [], sides: [],
+      hasVersions: false, versions: []
     });
     setEditingId(null);
     setFormVisible(false);
@@ -69,7 +72,9 @@ const MenuManager = () => {
       discountPrice: item.discountPrice || 0,
       isDeal: item.isDeal || false,
       dealItems: normalizedDealItems,
-      sides: normalizedSides
+      sides: normalizedSides,
+      hasVersions: item.hasVersions || false,
+      versions: item.versions || [],
     });
     setEditingId(item._id);
     setFormVisible(true);
@@ -121,6 +126,28 @@ const MenuManager = () => {
       }
     });
   };
+
+  const handleAddVersion = () => {
+    setFormData(prev => ({
+      ...prev,
+      versions: [...prev.versions, { name: '', price: '', discountPrice: 0 }]
+    }));
+  };
+
+  const handleRemoveVersion = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      versions: prev.versions.filter((_, idx) => idx !== index)
+    }));
+  };
+
+  const handleVersionChange = (index, field, value) => {
+    setFormData(prev => {
+      const updated = [...prev.versions];
+      updated[index][field] = value;
+      return { ...prev, versions: updated };
+    });
+  };
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -144,14 +171,54 @@ const MenuManager = () => {
                 <input type="text" className="input-field" required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} />
               </div>
 
-              <div className="input-group">
-                <label className="input-label">Standard Price ($)</label>
-                <input type="number" step="0.01" className="input-field" required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+              <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', gridColumn: 'span 2' }}>
+                <input type="checkbox" id="hasVersions" checked={formData.hasVersions} onChange={(e) => setFormData({...formData, hasVersions: e.target.checked})} />
+                <label htmlFor="hasVersions" style={{ fontWeight: 'bold', cursor: 'pointer', color: 'var(--primary-dark)' }}>This item has multiple versions/sizes (e.g. Half, Full, 1 KG)</label>
               </div>
-              <div className="input-group">
-                <label className="input-label">Discount Price ($) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
-                <input type="number" step="0.01" className="input-field" value={formData.discountPrice} onChange={(e) => setFormData({...formData, discountPrice: e.target.value})} />
-              </div>
+
+              {!formData.hasVersions ? (
+                <>
+                  <div className="input-group">
+                    <label className="input-label">Standard Price ($)</label>
+                    <input type="number" step="0.01" className="input-field" required={!formData.hasVersions} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+                  </div>
+                  <div className="input-group">
+                    <label className="input-label">Discount Price ($) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
+                    <input type="number" step="0.01" className="input-field" value={formData.discountPrice} onChange={(e) => setFormData({...formData, discountPrice: e.target.value})} />
+                  </div>
+                </>
+              ) : (
+                <div style={{ gridColumn: 'span 2', background: '#f9fafb', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h4 style={{ margin: 0 }}>Versions & Prices</h4>
+                    <button type="button" className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }} onClick={handleAddVersion}>
+                      + Add Version
+                    </button>
+                  </div>
+                  {formData.versions.map((ver, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', marginBottom: '1rem', borderBottom: '1px dashed var(--border)', paddingBottom: '1rem' }}>
+                      <div className="input-group" style={{ flex: 2, marginBottom: 0 }}>
+                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Version Name (e.g., Half, Full)</label>
+                        <input type="text" className="input-field" style={{ padding: '0.5rem' }} required value={ver.name} placeholder="Half" onChange={(e) => handleVersionChange(idx, 'name', e.target.value)} />
+                      </div>
+                      <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
+                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Price ($)</label>
+                        <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} required value={ver.price} placeholder="10.00" onChange={(e) => handleVersionChange(idx, 'price', e.target.value)} />
+                      </div>
+                      <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
+                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Discount Price ($)</label>
+                        <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} value={ver.discountPrice} placeholder="0.00" onChange={(e) => handleVersionChange(idx, 'discountPrice', e.target.value)} />
+                      </div>
+                      <button type="button" className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer' }} onClick={() => handleRemoveVersion(idx)}>
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  {formData.versions.length === 0 && (
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No versions added yet. Click "+ Add Version" to define one.</p>
+                  )}
+                </div>
+              )}
 
               <div className="input-group" style={{ gridColumn: 'span 2' }}>
                 <label className="input-label">Image (Upload or Image URL)</label>

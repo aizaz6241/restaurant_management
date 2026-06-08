@@ -15,31 +15,64 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (item) => {
+  const addToCart = (item, versionObj = null) => {
     setCart((prev) => {
-      const existingItem = prev.find((i) => i.menuItem === item._id);
+      const versionName = versionObj ? versionObj.name : null;
+      const existingItem = prev.find(
+        (i) => i.menuItem === item._id && i.version === versionName
+      );
       if (existingItem) {
         return prev.map((i) =>
-          i.menuItem === item._id ? { ...i, quantity: i.quantity + 1 } : i
+          i.menuItem === item._id && i.version === versionName
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         );
       }
-      const activePrice = item.discountPrice && item.discountPrice > 0 ? item.discountPrice : item.price;
-      return [...prev, { menuItem: item._id, name: item.name, price: activePrice, quantity: 1, image: item.image }];
+      
+      let activePrice = 0;
+      if (versionObj) {
+        activePrice = versionObj.discountPrice && versionObj.discountPrice > 0 
+          ? versionObj.discountPrice 
+          : versionObj.price;
+      } else {
+        activePrice = item.discountPrice && item.discountPrice > 0 
+          ? item.discountPrice 
+          : item.price;
+      }
+
+      return [
+        ...prev,
+        {
+          menuItem: item._id,
+          name: item.name,
+          version: versionName,
+          price: activePrice,
+          quantity: 1,
+          image: item.image,
+        },
+      ];
     });
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((i) => i.menuItem !== id));
+  const removeFromCart = (id, version = null) => {
+    setCart((prev) =>
+      prev.filter((i) => !(i.menuItem === id && i.version === version))
+    );
   };
 
-  const updateQuantity = (id, quantity) => {
-    if (quantity < 1) {
-      removeFromCart(id);
+  const updateQuantity = (id, version, quantity) => {
+    const targetVersion = typeof version === 'number' ? null : version;
+    const targetQty = typeof version === 'number' ? version : quantity;
+    
+    if (targetQty < 1) {
+      removeFromCart(id, targetVersion);
       return;
     }
     setCart((prev) =>
-      prev.map((i) => (i.menuItem === id ? { ...i, quantity } : i))
+      prev.map((i) =>
+        i.menuItem === id && i.version === targetVersion ? { ...i, quantity: targetQty } : i
+      )
     );
   };
 

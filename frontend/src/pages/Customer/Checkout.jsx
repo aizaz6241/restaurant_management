@@ -61,8 +61,8 @@ const Checkout = () => {
           <h2 style={{ marginBottom: '1.5rem' }}>Order Summary</h2>
           <div style={{ marginBottom: '1.5rem' }}>
             {cart.map(item => (
-              <div key={item.menuItem} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <span>{item.quantity}x {item.name}</span>
+              <div key={item.menuItem + (item.version || '')} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span>{item.quantity}x {item.name} {item.version && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>({item.version})</span>}</span>
                 <span>${(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}

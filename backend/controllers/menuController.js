@@ -17,18 +17,20 @@ const getMenuItems = async (req, res) => {
 // @access  Private/Admin
 const createMenuItem = async (req, res) => {
   try {
-    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides } = req.body;
+    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides, hasVersions, versions } = req.body;
     const menuItem = new MenuItem({
       name,
       description,
-      price,
+      price: hasVersions ? 0 : price, // base price 0 if versions exist
       image,
       category,
       isAvailable,
-      discountPrice,
+      discountPrice: hasVersions ? 0 : discountPrice,
       isDeal,
       dealItems,
       sides,
+      hasVersions,
+      versions,
     });
     const createdItem = await menuItem.save();
     res.status(201).json(createdItem);
@@ -42,7 +44,7 @@ const createMenuItem = async (req, res) => {
 // @access  Private/Admin
 const updateMenuItem = async (req, res) => {
   try {
-    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides } = req.body;
+    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides, hasVersions, versions } = req.body;
     const menuItem = await MenuItem.findById(req.params.id);
 
     if (menuItem) {
@@ -56,6 +58,8 @@ const updateMenuItem = async (req, res) => {
       menuItem.isDeal = isDeal === undefined ? menuItem.isDeal : isDeal;
       menuItem.dealItems = dealItems === undefined ? menuItem.dealItems : dealItems;
       menuItem.sides = sides === undefined ? menuItem.sides : sides;
+      menuItem.hasVersions = hasVersions === undefined ? menuItem.hasVersions : hasVersions;
+      menuItem.versions = versions === undefined ? menuItem.versions : versions;
 
       const updatedItem = await menuItem.save();
       res.json(updatedItem);

@@ -52,6 +52,17 @@ const menuItemSchema = mongoose.Schema(
         ref: 'SideItem',
       },
     ],
+    hasVersions: {
+      type: Boolean,
+      default: false,
+    },
+    versions: [
+      {
+        name: { type: String, required: true },
+        price: { type: Number, required: true },
+        discountPrice: { type: Number, default: 0 },
+      },
+    ],
   },
   {
     timestamps: true,

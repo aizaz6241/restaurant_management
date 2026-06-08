@@ -18,6 +18,7 @@ const orderSchema = mongoose.Schema(
           ref: 'MenuItem',
         },
         name: { type: String, required: true },
+        version: { type: String },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
