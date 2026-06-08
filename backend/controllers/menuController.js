@@ -5,7 +5,7 @@ const MenuItem = require('../models/MenuItem');
 // @access  Public
 const getMenuItems = async (req, res) => {
   try {
-    const items = await MenuItem.find({}).populate('dealItems.menuItem');
+    const items = await MenuItem.find({}).populate('dealItems.menuItem').populate('sides');
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,7 +17,7 @@ const getMenuItems = async (req, res) => {
 // @access  Private/Admin
 const createMenuItem = async (req, res) => {
   try {
-    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems } = req.body;
+    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides } = req.body;
     const menuItem = new MenuItem({
       name,
       description,
@@ -28,6 +28,7 @@ const createMenuItem = async (req, res) => {
       discountPrice,
       isDeal,
       dealItems,
+      sides,
     });
     const createdItem = await menuItem.save();
     res.status(201).json(createdItem);
@@ -41,7 +42,7 @@ const createMenuItem = async (req, res) => {
 // @access  Private/Admin
 const updateMenuItem = async (req, res) => {
   try {
-    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems } = req.body;
+    const { name, description, price, image, category, isAvailable, discountPrice, isDeal, dealItems, sides } = req.body;
     const menuItem = await MenuItem.findById(req.params.id);
 
     if (menuItem) {
@@ -54,6 +55,7 @@ const updateMenuItem = async (req, res) => {
       menuItem.discountPrice = discountPrice === undefined ? menuItem.discountPrice : discountPrice;
       menuItem.isDeal = isDeal === undefined ? menuItem.isDeal : isDeal;
       menuItem.dealItems = dealItems === undefined ? menuItem.dealItems : dealItems;
+      menuItem.sides = sides === undefined ? menuItem.sides : sides;
 
       const updatedItem = await menuItem.save();
       res.json(updatedItem);

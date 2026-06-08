@@ -10,6 +10,7 @@ import AdminLayout from './pages/Admin/AdminLayout';
 import Dashboard from './pages/Admin/Dashboard';
 import OrdersManager from './pages/Admin/OrdersManager';
 import MenuManager from './pages/Admin/MenuManager';
+import SidesManager from './pages/Admin/SidesManager';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="orders" element={<OrdersManager />} />
           <Route path="menu" element={<MenuManager />} />
+          <Route path="sides" element={<SidesManager />} />
         </Route>
       </Routes>
     </div>

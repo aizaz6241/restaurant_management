@@ -46,6 +46,12 @@ const menuItemSchema = mongoose.Schema(
         },
       },
     ],
+    sides: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SideItem',
+      },
+    ],
   },
   {
     timestamps: true,

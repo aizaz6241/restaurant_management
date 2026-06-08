@@ -126,6 +126,38 @@ const MenuCard = ({ item, addToCart }) => {
             </ul>
           </div>
         )}
+
+        {item.sides && item.sides.length > 0 && (
+          <div style={{ marginBottom: '1rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Served With:</div>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {item.sides.map((side) => (
+                <div 
+                  key={side._id} 
+                  title={side.name + (side.price > 0 ? ` (+$${side.price.toFixed(2)})` : ' (Included)')}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.4rem', 
+                    background: 'var(--bg-card)', 
+                    padding: '0.25rem 0.5rem', 
+                    borderRadius: '20px', 
+                    border: '1px solid var(--border)',
+                    fontSize: '0.75rem',
+                    fontWeight: '500'
+                  }}
+                >
+                  <img 
+                    src={side.image} 
+                    alt={side.name} 
+                    style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} 
+                  />
+                  <span>{side.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         <button 
           className="btn btn-primary" 

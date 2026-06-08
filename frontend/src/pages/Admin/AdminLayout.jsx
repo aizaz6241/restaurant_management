@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { FiHome, FiList, FiPackage, FiMenu, FiX } from 'react-icons/fi';
+import { FiHome, FiList, FiPackage, FiMenu, FiX, FiGrid } from 'react-icons/fi';
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -13,6 +13,7 @@ const AdminLayout = () => {
     { path: '/admin', icon: <FiHome />, label: 'Dashboard' },
     { path: '/admin/orders', icon: <FiPackage />, label: 'Orders' },
     { path: '/admin/menu', icon: <FiList />, label: 'Menu Items' },
+    { path: '/admin/sides', icon: <FiGrid />, label: 'Sides/Addons' },
   ];
 
   return (

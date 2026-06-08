@@ -9,6 +9,7 @@ const MenuManager = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
+  const [sidesList, setSidesList] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -19,6 +20,7 @@ const MenuManager = () => {
     discountPrice: 0,
     isDeal: false,
     dealItems: [],
+    sides: [],
   });
 
   const fetchMenu = async () => {
@@ -30,14 +32,24 @@ const MenuManager = () => {
     }
   };
 
+  const fetchSidesList = async () => {
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}/api/sides`);
+      setSidesList(data);
+    } catch (error) {
+      console.error('Error fetching sides list:', error);
+    }
+  };
+
   useEffect(() => {
     fetchMenu();
+    fetchSidesList();
   }, []);
 
   const resetForm = () => {
     setFormData({ 
       name: '', description: '', price: '', image: '', category: '', 
-      isAvailable: true, discountPrice: 0, isDeal: false, dealItems: [] 
+      isAvailable: true, discountPrice: 0, isDeal: false, dealItems: [], sides: [] 
     });
     setEditingId(null);
     setFormVisible(false);
@@ -50,11 +62,14 @@ const MenuManager = () => {
       quantity: d.quantity
     })) : [];
 
+    const normalizedSides = item.sides ? item.sides.map(s => s._id || s) : [];
+
     setFormData({ 
       ...item, 
       discountPrice: item.discountPrice || 0,
       isDeal: item.isDeal || false,
-      dealItems: normalizedDealItems
+      dealItems: normalizedDealItems,
+      sides: normalizedSides
     });
     setEditingId(item._id);
     setFormVisible(true);
@@ -96,7 +111,16 @@ const MenuManager = () => {
       }
     });
   };
-
+  const handleSideToggle = (sideId) => {
+    setFormData(prev => {
+      const exists = prev.sides.includes(sideId);
+      if (exists) {
+        return { ...prev, sides: prev.sides.filter(id => id !== sideId) };
+      } else {
+        return { ...prev, sides: [...prev.sides, sideId] };
+      }
+    });
+  };
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -189,6 +213,32 @@ const MenuManager = () => {
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Note: The Deal price is set by the "Standard Price" & "Discount Price" fields above. It does not automatically sum up.</p>
                 </div>
               )}
+            </div>
+
+            <div style={{ border: '1px solid var(--border)', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', background: 'white' }}>
+              <label className="input-label" style={{ fontWeight: 'bold', color: 'var(--primary-dark)', marginBottom: '0.75rem', display: 'block' }}>Include Additional Sides (Raita, Salad, Soup, etc.)</label>
+              <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                {sidesList.map(side => {
+                  const isChecked = formData.sides.includes(side._id);
+                  return (
+                    <div key={side._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
+                      <input 
+                        type="checkbox" 
+                        id={`side-${side._id}`} 
+                        checked={isChecked}
+                        onChange={() => handleSideToggle(side._id)}
+                      />
+                      <label htmlFor={`side-${side._id}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <img src={side.image} alt={side.name} style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
+                        {side.name} {side.price > 0 && <span style={{ color: 'var(--primary)' }}>(+${side.price.toFixed(2)})</span>}
+                      </label>
+                    </div>
+                  );
+                })}
+                {sidesList.length === 0 && (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No side items created yet. Go to "Sides/Addons" to create some.</p>
+                )}
+              </div>
             </div>
 
             <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
