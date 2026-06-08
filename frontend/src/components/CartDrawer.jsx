@@ -38,7 +38,7 @@ const CartDrawer = () => {
                     </div>
                   )}
                   <p style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    AED {(item.price * item.quantity).toFixed(2)}
                   </p>
                   <div className="cart-item-actions">
                     <button className="qty-btn" onClick={() => updateQuantity(item.menuItem, item.version, item.quantity - 1)}>
@@ -64,7 +64,7 @@ const CartDrawer = () => {
           <div className="cart-footer">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 'bold' }}>
               <span>Total:</span>
-              <span>${cartTotal.toFixed(2)}</span>
+              <span>AED {cartTotal.toFixed(2)}</span>
             </div>
             <button className="btn btn-primary" style={{ width: '100%' }} onClick={handleCheckout}>
               Proceed to Checkout

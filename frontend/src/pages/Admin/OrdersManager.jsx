@@ -86,7 +86,7 @@ const OrdersManager = () => {
                     </div>
                   ))}
                 </td>
-                <td style={{ fontWeight: 'bold', color: 'var(--primary)' }}>${order.totalAmount.toFixed(2)}</td>
+                <td style={{ fontWeight: 'bold', color: 'var(--primary)' }}>AED {order.totalAmount.toFixed(2)}</td>
                 <td>{new Date(order.createdAt).toLocaleString()}</td>
                 <td>
                   <span className={`badge badge-${order.status === 'Pending' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>

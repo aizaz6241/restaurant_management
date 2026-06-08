@@ -63,13 +63,13 @@ const Checkout = () => {
             {cart.map(item => (
               <div key={item.menuItem + (item.version || '')} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span>{item.quantity}x {item.name} {item.version && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>({item.version})</span>}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>AED {(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.25rem' }}>
             <span>Total</span>
-            <span>${cartTotal.toFixed(2)}</span>
+            <span>AED {cartTotal.toFixed(2)}</span>
           </div>
         </div>
 

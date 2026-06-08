@@ -179,11 +179,11 @@ const MenuManager = () => {
               {!formData.hasVersions ? (
                 <>
                   <div className="input-group">
-                    <label className="input-label">Standard Price ($)</label>
+                    <label className="input-label">Standard Price (AED)</label>
                     <input type="number" step="0.01" className="input-field" required={!formData.hasVersions} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
                   </div>
                   <div className="input-group">
-                    <label className="input-label">Discount Price ($) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
+                    <label className="input-label">Discount Price (AED) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, 0 = No Discount)</span></label>
                     <input type="number" step="0.01" className="input-field" value={formData.discountPrice} onChange={(e) => setFormData({...formData, discountPrice: e.target.value})} />
                   </div>
                 </>
@@ -202,11 +202,11 @@ const MenuManager = () => {
                         <input type="text" className="input-field" style={{ padding: '0.5rem' }} required value={ver.name} placeholder="Half" onChange={(e) => handleVersionChange(idx, 'name', e.target.value)} />
                       </div>
                       <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
-                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Price ($)</label>
+                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Price (AED)</label>
                         <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} required value={ver.price} placeholder="10.00" onChange={(e) => handleVersionChange(idx, 'price', e.target.value)} />
                       </div>
                       <div className="input-group" style={{ flex: 1, marginBottom: 0 }}>
-                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Discount Price ($)</label>
+                        <label className="input-label" style={{ fontSize: '0.8rem' }}>Discount Price (AED)</label>
                         <input type="number" step="0.01" className="input-field" style={{ padding: '0.5rem' }} value={ver.discountPrice} placeholder="0.00" onChange={(e) => handleVersionChange(idx, 'discountPrice', e.target.value)} />
                       </div>
                       <button type="button" className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer' }} onClick={() => handleRemoveVersion(idx)}>
@@ -268,7 +268,7 @@ const MenuManager = () => {
                           />
                           <label htmlFor={`deal-${menuItem._id}`} style={{ cursor: 'pointer', display:'flex', alignItems:'center', gap:'1rem' }}>
                             <img src={menuItem.image} alt={menuItem.name} style={{ width: '30px', height: '30px', borderRadius: '4px', objectFit: 'cover' }} />
-                            {menuItem.name} <span style={{ color: 'var(--text-muted)' }}>(${menuItem.price})</span>
+                            {menuItem.name} <span style={{ color: 'var(--text-muted)' }}>(AED {menuItem.price})</span>
                           </label>
                         </div>
                       )
@@ -297,7 +297,7 @@ const MenuManager = () => {
                       />
                       <label htmlFor={`side-${side._id}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <img src={side.image} alt={side.name} style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
-                        {side.name} {side.price > 0 && <span style={{ color: 'var(--primary)' }}>(+${side.price.toFixed(2)})</span>}
+                        {side.name} {side.price > 0 && <span style={{ color: 'var(--primary)' }}>(+AED {side.price.toFixed(2)})</span>}
                       </label>
                     </div>
                   );
@@ -352,11 +352,11 @@ const MenuManager = () => {
                 <td>
                   {item.discountPrice > 0 ? (
                     <div>
-                      <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', marginRight: '0.5rem', fontSize: '0.875rem' }}>${item.price.toFixed(2)}</span>
-                      <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>${item.discountPrice.toFixed(2)}</span>
+                      <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', marginRight: '0.5rem', fontSize: '0.875rem' }}>AED {item.price.toFixed(2)}</span>
+                      <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.discountPrice.toFixed(2)}</span>
                     </div>
                   ) : (
-                    <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>${item.price.toFixed(2)}</span>
+                    <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>AED {item.price.toFixed(2)}</span>
                   )}
                 </td>
                 <td>

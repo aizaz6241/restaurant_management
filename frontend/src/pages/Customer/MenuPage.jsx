@@ -115,11 +115,11 @@ const MenuCard = ({ item, addToCart }) => {
           <div style={{ textAlign: 'right' }}>
             {isDiscounted ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
-                <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.875rem' }}>${basePrice.toFixed(2)}</span>
-                <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '1.2rem' }}>${displayPrice.toFixed(2)}</span>
+                <span style={{ textDecoration: 'line-through', color: 'var(--text-muted)', fontSize: '0.875rem' }}>AED {basePrice.toFixed(2)}</span>
+                <span style={{ color: 'var(--primary)', fontWeight: 'bold', fontSize: '1.2rem' }}>AED {displayPrice.toFixed(2)}</span>
               </div>
             ) : (
-              <span className="menu-card-price" style={{ fontSize: '1.2rem' }}>${displayPrice.toFixed(2)}</span>
+              <span className="menu-card-price" style={{ fontSize: '1.2rem' }}>AED {displayPrice.toFixed(2)}</span>
             )}
           </div>
         </div>
@@ -148,7 +148,7 @@ const MenuCard = ({ item, addToCart }) => {
             >
               {item.versions.map(v => (
                 <option key={v.name} value={v.name}>
-                  {v.name} - ${v.discountPrice && v.discountPrice > 0 ? v.discountPrice.toFixed(2) : v.price.toFixed(2)}
+                  {v.name} - AED {v.discountPrice && v.discountPrice > 0 ? v.discountPrice.toFixed(2) : v.price.toFixed(2)}
                 </option>
               ))}
             </select>

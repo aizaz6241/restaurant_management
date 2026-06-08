@@ -64,7 +64,7 @@ const Dashboard = () => {
     labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
     datasets: [
       {
-        label: 'Revenue ($)',
+        label: 'Revenue (AED)',
         data: [120, 190, 300, 250, 400, 350, stats.totalRevenue || 500],
         borderColor: 'rgba(248, 113, 113, 1)',
         backgroundColor: 'rgba(248, 113, 113, 0.2)',
@@ -84,7 +84,7 @@ const Dashboard = () => {
           </div>
           <div className="stat-info">
             <h3>Total Revenue</h3>
-            <p>${stats.totalRevenue.toFixed(2)}</p>
+            <p>AED {stats.totalRevenue.toFixed(2)}</p>
           </div>
         </div>
         <div className="stat-card">
@@ -121,7 +121,7 @@ const Dashboard = () => {
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{order.customerName}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontWeight: 'bold' }}>${order.totalAmount.toFixed(2)}</p>
+                <p style={{ fontWeight: 'bold' }}>AED {order.totalAmount.toFixed(2)}</p>
                 <span className={`badge badge-${order.status === 'Pending' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>
                   {order.status}
                 </span>

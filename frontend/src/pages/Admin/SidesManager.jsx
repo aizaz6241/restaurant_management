@@ -95,7 +95,7 @@ import { useState, useEffect } from 'react';
                     />
                   </div>
                   <div className="input-group">
-                    <label className="input-label">Price ($) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, default 0 for free side)</span></label>
+                    <label className="input-label">Price (AED) <span style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>(Optional, default 0 for free side)</span></label>
                     <input 
                       type="number" 
                       step="0.01" 
@@ -159,7 +159,7 @@ import { useState, useEffect } from 'react';
                     <td style={{ fontWeight: 'bold' }}>{side.name}</td>
                     <td>
                       {side.price > 0 ? (
-                        <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>+${side.price.toFixed(2)}</span>
+                        <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>+AED {side.price.toFixed(2)}</span>
                       ) : (
                         <span style={{ color: 'var(--success)', fontWeight: 'bold' }}>Free / Included</span>
                       )}
