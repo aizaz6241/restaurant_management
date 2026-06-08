@@ -3,7 +3,7 @@ const { createUploadthing } = require("uploadthing/express");
 const f = createUploadthing();
 
 const uploadRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
+  imageUploader: f({ image: { maxFileSize: "10MB" } })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete:", file.url);
     }),
