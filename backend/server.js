@@ -48,6 +48,7 @@ const { uploadRouter } = require("./utils/uploadthing");
 app.use('/api/menu', require('./routes/menuRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/sides', require('./routes/sideRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Uploadthing Route
 app.use(

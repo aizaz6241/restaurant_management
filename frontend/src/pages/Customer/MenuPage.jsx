@@ -5,6 +5,7 @@ import { FiPlus, FiAlertCircle, FiTag, FiX } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
 
 const MenuPage = () => {
+  const [activeCategory, setActiveCategory] = useState('All');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -32,23 +33,64 @@ const MenuPage = () => {
     );
   }
 
-  // Split items into Deals and Standard Items for better presentation
-  const deals = items.filter(item => item.isDeal);
-  const standardItems = items.filter(item => !item.isDeal);
+  // Extract unique categories dynamically from database items
+  const categories = ['All', ...new Set(items.map(item => item.category).filter(Boolean))];
+
+  // Split items into Deals and Standard Items for better presentation, filtered by category
+  const deals = items.filter(item => item.isDeal && (activeCategory === 'All' || item.category === activeCategory));
+  const standardItems = items.filter(item => !item.isDeal && (activeCategory === 'All' || item.category === activeCategory));
 
   return (
     <div className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Our Menu</h1>
+      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'Outfit', fontWeight: 'bold' }}>Our Menu</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem' }}>Discover our wide range of delicious items and combo deals.</p>
+      </div>
+
+      {/* Dynamic Category Filter Bar */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        gap: '0.75rem', 
+        flexWrap: 'wrap', 
+        marginBottom: '4rem',
+        padding: '0.5rem',
+        background: 'rgba(255, 255, 255, 0.45)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: 'var(--radius-full)',
+        border: '1px solid var(--border)',
+        maxWidth: 'fit-content',
+        margin: '0 auto 4rem auto',
+        boxShadow: 'var(--shadow-sm)'
+      }}>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`btn ${activeCategory === cat ? 'btn-primary' : 'btn-outline'}`}
+            style={{
+              padding: '0.6rem 1.6rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              textTransform: 'capitalize',
+              border: activeCategory === cat ? '1px solid var(--primary)' : '1px solid transparent',
+              boxShadow: activeCategory === cat ? '0 4px 12px rgba(248, 113, 113, 0.25)' : 'none',
+              cursor: 'pointer',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {deals.length > 0 && (
         <div style={{ marginBottom: '4rem' }}>
-          <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
+          <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontFamily: 'Outfit', fontWeight: 'bold' }}>
             <FiTag /> Special Combo Deals
           </h2>
-          <div className="grid-cols-4 animate-fade-in">
+          <div className="grid-cols-4 animate-fade-in" key={`deals-${activeCategory}`}>
             {deals.map((item) => (
               <MenuCard key={item._id} item={item} addToCart={addToCart} onSelect={() => setSelectedItem(item)} />
             ))}
@@ -56,15 +98,23 @@ const MenuPage = () => {
         </div>
       )}
 
-      {standardItems.length > 0 && (
+      {standardItems.length > 0 ? (
         <div>
-          <h2 style={{ marginBottom: '2rem' }}>All Items</h2>
-          <div className="grid-cols-4 animate-fade-in">
+          <h2 style={{ marginBottom: '2rem', fontFamily: 'Outfit', fontWeight: 'bold' }}>
+            {activeCategory === 'All' ? 'All Items' : `${activeCategory} Items`}
+          </h2>
+          <div className="grid-cols-4 animate-fade-in" key={`items-${activeCategory}`}>
             {standardItems.map((item) => (
               <MenuCard key={item._id} item={item} addToCart={addToCart} onSelect={() => setSelectedItem(item)} />
             ))}
           </div>
         </div>
+      ) : (
+        deals.length === 0 && (
+          <div className="glass animate-fade-in" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)', borderRadius: 'var(--radius-lg)' }}>
+            <h3>No items found in this category.</h3>
+          </div>
+        )
       )}
 
       {/* Detail Modal Popup */}

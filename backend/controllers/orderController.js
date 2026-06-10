@@ -10,7 +10,7 @@ const generateTrackingNumber = () => {
 // @access  Public
 const createOrder = async (req, res) => {
   try {
-    const { customerName, phoneNumber, items, totalAmount } = req.body;
+    const { customerName, phoneNumber, address, items, totalAmount } = req.body;
 
     if (items && items.length === 0) {
       return res.status(400).json({ message: 'No order items' });
@@ -19,6 +19,7 @@ const createOrder = async (req, res) => {
     const order = new Order({
       customerName,
       phoneNumber,
+      address,
       items,
       totalAmount,
       trackingNumber: generateTrackingNumber(),

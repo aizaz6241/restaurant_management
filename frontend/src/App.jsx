@@ -11,6 +11,8 @@ import Dashboard from './pages/Admin/Dashboard';
 import OrdersManager from './pages/Admin/OrdersManager';
 import MenuManager from './pages/Admin/MenuManager';
 import SidesManager from './pages/Admin/SidesManager';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 
 function App() {
   return (
@@ -25,11 +27,15 @@ function App() {
         <Route path="/track/:trackingNumber?" element={<><Header /><Tracking /></>} />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="orders" element={<OrdersManager />} />
-          <Route path="menu" element={<MenuManager />} />
-          <Route path="sides" element={<SidesManager />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="orders" element={<OrdersManager />} />
+            <Route path="menu" element={<MenuManager />} />
+            <Route path="sides" element={<SidesManager />} />
+          </Route>
         </Route>
       </Routes>
     </div>

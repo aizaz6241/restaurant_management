@@ -175,6 +175,25 @@ const Tracking = () => {
                       })}
                     </div>
                   )}
+                  {/* Order Items & Delivery Address Details */}
+                  <div style={{ marginTop: '2.5rem', borderTop: '1px dashed var(--border)', paddingTop: '1.5rem' }}>
+                    <h4 style={{ marginBottom: '1rem', color: 'var(--primary-dark)', fontFamily: 'Outfit', fontWeight: 'bold' }}>Items Ordered</h4>
+                    <div style={{ background: 'rgba(255, 255, 255, 0.5)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: '1.5rem' }}>
+                      {order.items.map(item => (
+                        <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                          <span>{item.quantity}x {item.name} {item.version && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>({item.version})</span>}</span>
+                          <span style={{ fontWeight: '600', color: 'var(--text-main)' }}>AED {(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {order.address && (
+                      <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--primary-light)' }}>
+                        <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--primary-dark)', fontFamily: 'Outfit', fontSize: '1rem', fontWeight: 'bold' }}>Delivery Location / Address</h4>
+                        <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.5', fontStyle: 'italic', color: 'var(--text-main)' }}>{order.address}</p>
+                      </div>
+                    )}
+                  </div>
+
                   <style>{`
                     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
                   `}</style>

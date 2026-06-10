@@ -76,8 +76,13 @@ const OrdersManager = () => {
               <tr key={order._id}>
                 <td style={{ fontWeight: 'bold' }}>{order.trackingNumber}</td>
                 <td>
-                  <div>{order.customerName}</div>
+                  <div style={{ fontWeight: 'bold' }}>{order.customerName}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{order.phoneNumber}</div>
+                  {order.address && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', marginTop: '0.35rem', fontStyle: 'italic', background: '#fff5f5', padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid var(--primary-light)', maxWidth: '220px', whiteSpace: 'normal' }}>
+                      <strong>Loc:</strong> {order.address}
+                    </div>
+                  )}
                 </td>
                 <td>
                   {order.items.map(item => (

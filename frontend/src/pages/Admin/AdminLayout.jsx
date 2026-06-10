@@ -1,14 +1,41 @@
-import { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { FiHome, FiList, FiPackage, FiMenu, FiX, FiGrid } from 'react-icons/fi';
+import { useState, useEffect } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { FiHome, FiList, FiPackage, FiMenu, FiX, FiGrid, FiLogOut } from 'react-icons/fi';
+import { io } from 'socket.io-client';
 import logoImg from '../../assets/logo.jpg';
+import { API_BASE_URL } from '../../config';
+import { playLoudChime, showDesktopNotification } from '../../utils/audioAlert';
 
 const AdminLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Request browser notification permission if not already requested
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    const socket = io(API_BASE_URL);
+
+    socket.on('newOrder', (newOrder) => {
+      // Play loud synthesized ding-dong chime
+      playLoudChime();
+      // Show desktop browser notification
+      showDesktopNotification(newOrder);
+    });
+
+    return () => socket.disconnect();
+  }, []);
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMenu = () => setIsMobileMenuOpen(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    navigate('/admin/login');
+  };
 
   const navItems = [
     { path: '/admin', icon: <FiHome />, label: 'Dashboard' },
@@ -38,7 +65,7 @@ const AdminLayout = () => {
             <FiX size={24} />
           </button>
         </div>
-        <nav>
+        <nav style={{ display: 'flex', flexDirection: 'column', height: 'calc(100% - 60px)' }}>
           {navItems.map((item) => (
             <Link 
               key={item.path} 
@@ -50,6 +77,27 @@ const AdminLayout = () => {
               {item.label}
             </Link>
           ))}
+          <button 
+            onClick={handleLogout} 
+            className="admin-nav-item"
+            style={{ 
+              width: '100%', 
+              background: 'none', 
+              border: 'none', 
+              textAlign: 'left', 
+              cursor: 'pointer',
+              color: 'var(--danger)',
+              marginTop: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              fontFamily: 'inherit',
+              fontSize: 'inherit'
+            }}
+          >
+            <FiLogOut />
+            Logout
+          </button>
         </nav>
       </aside>
       

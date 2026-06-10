@@ -12,6 +12,7 @@ const Checkout = () => {
   const [formData, setFormData] = useState({
     customerName: '',
     phoneNumber: '',
+    address: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,6 +28,7 @@ const Checkout = () => {
       const orderData = {
         customerName: formData.customerName,
         phoneNumber: formData.phoneNumber,
+        address: formData.address,
         items: cart,
         totalAmount: cartTotal,
       };
@@ -99,6 +101,17 @@ const Checkout = () => {
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
                 placeholder="e.g. +1 234 567 8900"
+              />
+            </div>
+            <div className="input-group">
+              <label className="input-label">Delivery Location / Address</label>
+              <textarea 
+                className="input-field" 
+                required 
+                rows="3"
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                placeholder="Enter your complete delivery address or location details"
               />
             </div>
             
