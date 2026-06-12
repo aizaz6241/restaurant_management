@@ -147,7 +147,7 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
     : !!(item.discountPrice && item.discountPrice > 0);
 
   // Solar Orbit coordinate calculations for side items (larger size)
-  const radius = 86; // orbit radius (fits cleanly within 180px container)
+  const radius = 106; // orbit radius (fits cleanly within 220px container)
   const totalSides = item.sides ? item.sides.length : 0;
   const sidePositions = item.sides ? item.sides.map((side, idx) => {
     // Distribute angles evenly, starting at -90deg (top center)
@@ -157,8 +157,8 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
     return {
       side,
       style: {
-        left: `calc(50% + ${x}px - 22px)`, // 22px is half of 44px width
-        top: `calc(50% + ${y}px - 22px)`
+        left: `calc(50% + ${x}px - 26px)`, // 26px is half of 52px width
+        top: `calc(50% + ${y}px - 26px)`
       }
     };
   }) : [];
@@ -306,7 +306,7 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
     : !!(item.discountPrice && item.discountPrice > 0);
 
   // Large Orbit calculations inside the modal
-  const radius = 118; // Larger radius for modal layout
+  const radius = 142; // Larger radius for modal layout
   const totalSides = item.sides ? item.sides.length : 0;
   const sidePositions = item.sides ? item.sides.map((side, idx) => {
     const angle = (idx * 2 * Math.PI) / totalSides - Math.PI / 2;
@@ -315,8 +315,8 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
     return {
       side,
       style: {
-        left: `calc(50% + ${x}px - 25px)`, // 25px is half of 50px width
-        top: `calc(50% + ${y}px - 25px)`
+        left: `calc(50% + ${x}px - 30px)`, // 30px is half of 60px width
+        top: `calc(50% + ${y}px - 30px)`
       }
     };
   }) : [];

@@ -433,7 +433,7 @@ button {
 .orbit-container {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -447,8 +447,8 @@ button {
 /* Central Food Image (Sun) */
 .sun-food-wrapper {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 165px;
+  height: 165px;
   border-radius: 50%;
   border: 4px solid white;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 15px rgba(248, 113, 113, 0.2);
@@ -477,8 +477,8 @@ button {
 /* Orbit ring line */
 .orbit-ring {
   position: absolute;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border: 1.5px dashed rgba(248, 113, 113, 0.25);
   border-radius: 50%;
   z-index: 2;
@@ -494,8 +494,8 @@ button {
 /* Planet Side Items */
 .planet-side-wrapper {
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -634,7 +634,11 @@ button {
     overflow-y: auto;
   }
   .modal-left {
-    height: 240px;
+    height: 260px;
+  }
+  .modal-orbit-container {
+    height: 260px !important;
+    transform: scale(0.7);
   }
 }
 
@@ -642,7 +646,7 @@ button {
 .modal-orbit-container {
   position: relative;
   width: 100%;
-  height: 320px;
+  height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,8 +655,8 @@ button {
 
 .modal-sun-food-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   border: 6px solid white;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 20px rgba(248, 113, 113, 0.25);
@@ -670,8 +674,8 @@ button {
 
 .modal-orbit-ring {
   position: absolute;
-  width: 250px;
-  height: 250px;
+  width: 300px;
+  height: 300px;
   border: 2px dashed rgba(248, 113, 113, 0.3);
   border-radius: 50%;
   z-index: 2;
@@ -681,8 +685,8 @@ button {
 
 .modal-planet-side-wrapper {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 2.5px solid white;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
