@@ -90,7 +90,7 @@ const MenuPage = () => {
           <h2 style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontFamily: 'Outfit', fontWeight: 'bold' }}>
             <FiTag /> Special Combo Deals
           </h2>
-          <div className="grid-cols-4 animate-fade-in" key={`deals-${activeCategory}`}>
+          <div className="grid-cols-3 animate-fade-in" key={`deals-${activeCategory}`}>
             {deals.map((item) => (
               <MenuCard key={item._id} item={item} addToCart={addToCart} onSelect={() => setSelectedItem(item)} />
             ))}
@@ -103,7 +103,7 @@ const MenuPage = () => {
           <h2 style={{ marginBottom: '2rem', fontFamily: 'Outfit', fontWeight: 'bold' }}>
             {activeCategory === 'All' ? 'All Items' : `${activeCategory} Items`}
           </h2>
-          <div className="grid-cols-4 animate-fade-in" key={`items-${activeCategory}`}>
+          <div className="grid-cols-3 animate-fade-in" key={`items-${activeCategory}`}>
             {standardItems.map((item) => (
               <MenuCard key={item._id} item={item} addToCart={addToCart} onSelect={() => setSelectedItem(item)} />
             ))}
@@ -147,7 +147,7 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
     : !!(item.discountPrice && item.discountPrice > 0);
 
   // Solar Orbit coordinate calculations for side items (larger size)
-  const radius = 115; // orbit radius (fits cleanly within 240px container)
+  const radius = 130; // orbit radius (fits cleanly within 270px container)
   const totalSides = item.sides ? item.sides.length : 0;
   const sidePositions = item.sides ? item.sides.map((side, idx) => {
     // Distribute angles evenly, starting at -90deg (top center)
@@ -157,8 +157,8 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
     return {
       side,
       style: {
-        left: `calc(50% + ${x}px - 30px)`, // 30px is half of 60px width
-        top: `calc(50% + ${y}px - 30px)`
+        left: `calc(50% + ${x}px - 36px)`, // 36px is half of 72px width
+        top: `calc(50% + ${y}px - 36px)`
       }
     };
   }) : [];
@@ -306,7 +306,7 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
     : !!(item.discountPrice && item.discountPrice > 0);
 
   // Large Orbit calculations inside the modal
-  const radius = 165; // Larger radius for modal layout
+  const radius = 190; // Larger radius for modal layout
   const totalSides = item.sides ? item.sides.length : 0;
   const sidePositions = item.sides ? item.sides.map((side, idx) => {
     const angle = (idx * 2 * Math.PI) / totalSides - Math.PI / 2;
@@ -315,8 +315,8 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
     return {
       side,
       style: {
-        left: `calc(50% + ${x}px - 36px)`, // 36px is half of 72px width
-        top: `calc(50% + ${y}px - 36px)`
+        left: `calc(50% + ${x}px - 42px)`, // 42px is half of 84px width
+        top: `calc(50% + ${y}px - 42px)`
       }
     };
   }) : [];
