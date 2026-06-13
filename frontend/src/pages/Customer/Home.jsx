@@ -164,7 +164,7 @@ const Home = () => {
           </div>
           <div style={{ flex: '1 1 450px' }}>
             <img 
-              src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=800&q=80" 
+              src="/tandoori_naan.png" 
               alt="Fresh Tandoor Naan" 
               style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', border: '4px solid var(--border)' }}
             />
