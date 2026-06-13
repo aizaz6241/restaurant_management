@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { UploadButton } from '../../utils/uploadthing';
-import { API_BASE_URL } from '../../config';
 import { compressImageFile } from '../../utils/imageOptimizer';
 
 const MenuManager = () => {
@@ -28,7 +27,7 @@ const MenuManager = () => {
 
   const fetchMenu = async () => {
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/api/menu`);
+      const { data } = await api.get('/api/menu');
       setItems(data);
     } catch (error) {
       console.error('Error fetching menu:', error);
@@ -37,7 +36,7 @@ const MenuManager = () => {
 
   const fetchSidesList = async () => {
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/api/sides`);
+      const { data } = await api.get('/api/sides');
       setSidesList(data);
     } catch (error) {
       console.error('Error fetching sides list:', error);
@@ -84,7 +83,7 @@ const MenuManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/menu/${id}`);
+        await api.delete(`/api/menu/${id}`);
         fetchMenu();
       } catch (error) {
         console.error('Error deleting item', error);
@@ -96,9 +95,9 @@ const MenuManager = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`${API_BASE_URL}/api/menu/${editingId}`, formData);
+        await api.put(`/api/menu/${editingId}`, formData);
       } else {
-        await axios.post(`${API_BASE_URL}/api/menu`, formData);
+        await api.post('/api/menu', formData);
       }
       fetchMenu();
       resetForm();

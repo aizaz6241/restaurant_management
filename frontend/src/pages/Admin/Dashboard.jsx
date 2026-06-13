@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { io } from 'socket.io-client';
 import { FiDollarSign, FiShoppingCart, FiTrendingUp } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
@@ -24,7 +24,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await axios.get(`${API_BASE_URL}/api/orders`);
+        const { data } = await api.get('/api/orders');
         setOrders(data);
         calculateStats(data);
       } catch (error) {

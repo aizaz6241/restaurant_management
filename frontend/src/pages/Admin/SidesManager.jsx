@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-    import axios from 'axios';
-    import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
-    import { UploadButton } from '../../utils/uploadthing';
-    import { API_BASE_URL } from '../../config';
-    import { compressImageFile } from '../../utils/imageOptimizer';
+import api from '../../utils/api';
+import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { UploadButton } from '../../utils/uploadthing';
+import { compressImageFile } from '../../utils/imageOptimizer';
 
     const SidesManager = () => {
       const [sides, setSides] = useState([]);
@@ -18,7 +17,7 @@ import { useState, useEffect } from 'react';
 
       const fetchSides = async () => {
         try {
-          const { data } = await axios.get(`${API_BASE_URL}/api/sides`);
+          const { data } = await api.get('/api/sides');
           setSides(data);
         } catch (error) {
           console.error('Error fetching sides:', error);
@@ -48,7 +47,7 @@ import { useState, useEffect } from 'react';
       const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this side item?')) {
           try {
-            await axios.delete(`${API_BASE_URL}/api/sides/${id}`);
+            await api.delete(`/api/sides/${id}`);
             fetchSides();
           } catch (error) {
             console.error('Error deleting side item:', error);
@@ -60,9 +59,9 @@ import { useState, useEffect } from 'react';
         e.preventDefault();
         try {
           if (editingId) {
-            await axios.put(`${API_BASE_URL}/api/sides/${editingId}`, formData);
+            await api.put(`/api/sides/${editingId}`, formData);
           } else {
-            await axios.post(`${API_BASE_URL}/api/sides`, formData);
+            await api.post('/api/sides', formData);
           }
           fetchSides();
           resetForm();
