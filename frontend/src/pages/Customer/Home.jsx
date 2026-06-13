@@ -116,7 +116,7 @@ const Home = () => {
         <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 450px' }}>
             <img 
-              src="/afghani_hospitality.png" 
+              src="/afghani_hospitality.webp" 
               alt="Afghani Dining Culture" 
               style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)' }}
             />
@@ -164,7 +164,7 @@ const Home = () => {
           </div>
           <div style={{ flex: '1 1 450px' }}>
             <img 
-              src="/tandoori_naan.png" 
+              src="/tandoori_naan.webp" 
               alt="Fresh Tandoor Naan" 
               style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)', border: '4px solid var(--border)' }}
             />
