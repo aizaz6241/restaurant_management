@@ -116,7 +116,7 @@ const Home = () => {
         <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '4rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 450px' }}>
             <img 
-              src="https://images.unsplash.com/photo-1590842229102-140e53313883?auto=format&fit=crop&w=800&q=80" 
+              src="/afghani_hospitality.png" 
               alt="Afghani Dining Culture" 
               style={{ width: '100%', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)' }}
             />
