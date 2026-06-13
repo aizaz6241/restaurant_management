@@ -13,6 +13,7 @@ import MenuManager from './pages/Admin/MenuManager';
 import SidesManager from './pages/Admin/SidesManager';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import AuditLogsManager from './pages/Admin/AuditLogsManager';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="orders" element={<OrdersManager />} />
             <Route path="menu" element={<MenuManager />} />
             <Route path="sides" element={<SidesManager />} />
+            <Route path="logs" element={<AuditLogsManager />} />
           </Route>
         </Route>
       </Routes>

@@ -1064,3 +1064,70 @@ tr:hover td {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
 }
+
+/* Responsive Stepper / Summary Grid */
+.tracking-order-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  flex: 1;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .tracking-order-summary {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tracking-order-summary {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* Unread order rows (highlight background) */
+.unread-order-row {
+  background-color: #fff4f4 !important;
+}
+
+.unread-order-row td {
+  background-color: #fff4f4 !important;
+  border-bottom: 1px solid rgba(248, 113, 113, 0.2) !important;
+}
+
+.unread-order-row:hover td {
+  background-color: #ffebeb !important;
+}
+
+/* Customer edit badge indicator */
+@keyframes pulseBadge {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+.badge-customer-edit {
+  background: var(--danger);
+  color: white;
+  animation: pulseBadge 2s infinite;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+  font-weight: bold;
+}
+
+/* Add Items Modal responsiveness */
+.add-items-modal-right {
+  border-left: 1px solid var(--border);
+  padding-left: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .add-items-modal-right {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px dashed var(--border);
+    padding-top: 1.5rem !important;
+  }
+}

@@ -42,6 +42,14 @@ const orderSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    hasCustomerChanges: {
+      type: Boolean,
+      default: false,
+    },
+    isAcknowledged: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -6,8 +6,9 @@ const {
   updateSide,
   deleteSide,
 } = require('../controllers/sideController');
+const { protectAdmin } = require('../middleware/authMiddleware');
 
-router.route('/').get(getSides).post(createSide);
-router.route('/:id').put(updateSide).delete(deleteSide);
+router.route('/').get(getSides).post(protectAdmin, createSide);
+router.route('/:id').put(protectAdmin, updateSide).delete(protectAdmin, deleteSide);
 
 module.exports = router;
