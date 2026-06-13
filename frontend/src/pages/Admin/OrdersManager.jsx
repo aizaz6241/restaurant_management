@@ -56,7 +56,8 @@ const OrdersManager = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await api.put(`/api/orders/${id}/status`, { status: newStatus });
+      const { data } = await api.put(`/api/orders/${id}/status`, { status: newStatus });
+      setOrders(prev => prev.map(o => o._id === id ? data : o));
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -64,7 +65,8 @@ const OrdersManager = () => {
 
   const handleAcknowledge = async (id) => {
     try {
-      await api.put(`/api/orders/${id}/acknowledge`);
+      const { data } = await api.put(`/api/orders/${id}/acknowledge`);
+      setOrders(prev => prev.map(o => o._id === id ? data : o));
     } catch (error) {
       console.error('Error acknowledging order:', error);
     }
@@ -74,6 +76,7 @@ const OrdersManager = () => {
     if (!deleteId) return;
     try {
       await api.delete(`/api/orders/${deleteId}`);
+      setOrders(prev => prev.filter(o => o._id !== deleteId));
       setDeleteId(null);
     } catch (error) {
       console.error('Error deleting order:', error);
@@ -95,7 +98,8 @@ const OrdersManager = () => {
         totalAmount: recalculatedTotal
       };
       
-      await api.put(`/api/orders/${editOrder._id}`, payload);
+      const { data } = await api.put(`/api/orders/${editOrder._id}`, payload);
+      setOrders(prev => prev.map(o => o._id === editOrder._id ? data : o));
       setEditOrder(null);
     } catch (error) {
       console.error('Error saving order edits:', error);

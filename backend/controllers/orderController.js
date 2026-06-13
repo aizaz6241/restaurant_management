@@ -313,7 +313,11 @@ const acknowledgeOrder = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
+      const oldStatus = order.status;
       order.isAcknowledged = true;
+      if (order.status === 'Pending') {
+        order.status = 'Approved';
+      }
       const updatedOrder = await order.save();
 
       // Save audit log
@@ -323,7 +327,9 @@ const acknowledgeOrder = async (req, res) => {
         trackingNumber: order.trackingNumber,
         changedBy: req.admin?.username || 'admin',
         details: {
-          status: 'Acknowledged'
+          oldStatus,
+          newStatus: order.status,
+          status: 'Acknowledged & Approved'
         }
       });
       await log.save();
