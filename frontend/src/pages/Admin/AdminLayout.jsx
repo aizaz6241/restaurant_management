@@ -18,7 +18,7 @@ const AdminLayout = () => {
     const fetchInitialAlerts = async () => {
       try {
         const { data } = await api.get('/api/orders');
-        const unreadIds = data.filter(o => !o.isAcknowledged && o.status !== 'Cancelled').map(o => o._id);
+        const unreadIds = data.filter(o => !o.isAcknowledged && o.status === 'Pending').map(o => o._id);
         setUnacknowledgedIds(unreadIds);
       } catch (err) {
         console.error('Error fetching initial unread orders:', err);
@@ -47,6 +47,17 @@ const AdminLayout = () => {
         return [...prev, updatedOrder._id];
       });
       showDesktopNotification(updatedOrder);
+    });
+
+    socket.on('orderStatusUpdated', (updatedOrder) => {
+      if (updatedOrder.isAcknowledged || updatedOrder.status !== 'Pending') {
+        setUnacknowledgedIds(prev => prev.filter(id => id !== updatedOrder._id));
+      } else {
+        setUnacknowledgedIds(prev => {
+          if (prev.includes(updatedOrder._id)) return prev;
+          return [...prev, updatedOrder._id];
+        });
+      }
     });
 
     socket.on('orderAcknowledged', (updatedOrder) => {

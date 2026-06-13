@@ -101,6 +101,7 @@ const updateOrderStatus = async (req, res) => {
     if (order) {
       const oldStatus = order.status;
       order.status = status;
+      order.isAcknowledged = true;
       const updatedOrder = await order.save();
 
       // Save audit log
@@ -155,6 +156,8 @@ const editOrder = async (req, res) => {
       if (items) order.items = items;
       if (totalAmount !== undefined) order.totalAmount = totalAmount;
       if (status) order.status = status;
+      order.isAcknowledged = true;
+      order.hasCustomerChanges = false;
 
       const updatedOrder = await order.save();
 

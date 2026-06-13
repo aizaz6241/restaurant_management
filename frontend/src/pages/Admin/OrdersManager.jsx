@@ -158,7 +158,7 @@ const OrdersManager = () => {
           </thead>
           <tbody>
             {filteredOrders.map(order => {
-              const isUnread = !order.isAcknowledged && order.status !== 'Cancelled';
+              const isUnread = !order.isAcknowledged && order.status === 'Pending';
               return (
                 <tr key={order._id} className={isUnread ? 'unread-order-row' : ''}>
                   <td>

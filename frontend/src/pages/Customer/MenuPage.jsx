@@ -49,21 +49,7 @@ const MenuPage = () => {
       </div>
 
       {/* Dynamic Category Filter Bar */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        gap: '0.75rem', 
-        flexWrap: 'wrap', 
-        marginBottom: '4rem',
-        padding: '0.5rem',
-        background: 'rgba(255, 255, 255, 0.45)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: 'var(--radius-full)',
-        border: '1px solid var(--border)',
-        maxWidth: 'fit-content',
-        margin: '0 auto 4rem auto',
-        boxShadow: 'var(--shadow-sm)'
-      }}>
+      <div className="category-filter-bar">
         {categories.map(cat => (
           <button
             key={cat}
