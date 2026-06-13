@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { UploadButton } from '../../utils/uploadthing';
 import { API_BASE_URL } from '../../config';
+import { compressImageFile } from '../../utils/imageOptimizer';
 
 const MenuManager = () => {
   const [items, setItems] = useState([]);
@@ -290,6 +291,12 @@ const MenuManager = () => {
                     <div style={{ flexShrink: 0 }}>
                       <UploadButton
                         endpoint="imageUploader"
+                        onBeforeUploadBegin={async (files) => {
+                          const compressedFiles = await Promise.all(
+                            files.map(file => compressImageFile(file))
+                          );
+                          return compressedFiles;
+                        }}
                         onClientUploadComplete={(res) => {
                           if (res && res[0]) {
                             setFormData({...formData, image: res[0].url});

@@ -1,6 +1,7 @@
 import { FiX, FiPlus, FiMinus, FiTrash2 } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { getOptimizedImageUrl } from '../utils/imageOptimizer';
 
 const CartDrawer = () => {
   const { cart, isCartOpen, toggleCart, updateQuantity, removeFromCart, cartTotal } = useCart();
@@ -29,7 +30,7 @@ const CartDrawer = () => {
           ) : (
             cart.map((item) => (
               <div key={item.menuItem + (item.version || '')} className="cart-item">
-                <img src={item.image} alt={item.name} className="cart-item-img" />
+                <img src={getOptimizedImageUrl(item.image, 100)} alt={item.name} className="cart-item-img" />
                 <div className="cart-item-info">
                   <h4 style={{ marginBottom: '0.1rem' }}>{item.name}</h4>
                   {item.version && (

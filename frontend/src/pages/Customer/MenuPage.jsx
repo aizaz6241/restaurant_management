@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useCart } from '../../context/CartContext';
 import { FiPlus, FiAlertCircle, FiTag, FiX } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
+import { getOptimizedImageUrl } from '../../utils/imageOptimizer';
 
 const MenuPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -183,7 +184,7 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
 
         {/* Central Sun (Main Food Image) */}
         <div className="sun-food-wrapper">
-          <img src={item.image} alt={item.name} className="sun-food" />
+          <img src={getOptimizedImageUrl(item.image, 300)} alt={item.name} className="sun-food" />
         </div>
 
         {/* Orbiting Planets (Sides / Add-ons) */}
@@ -194,7 +195,7 @@ const MenuCard = ({ item, addToCart, onSelect }) => {
             style={pos.style}
             data-tooltip={pos.side.name + (pos.side.price > 0 ? ` (+AED ${pos.side.price.toFixed(2)})` : ' (Included)')}
           >
-            <img src={pos.side.image} alt={pos.side.name} className="planet-side-img" />
+            <img src={getOptimizedImageUrl(pos.side.image, 100)} alt={pos.side.name} className="planet-side-img" />
           </div>
         ))}
 
@@ -333,7 +334,7 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
           <div className="modal-orbit-container">
             <div className="modal-orbit-ring"></div>
             <div className="modal-sun-food-wrapper">
-              <img src={item.image} alt={item.name} className="modal-sun-food" />
+              <img src={getOptimizedImageUrl(item.image, 400)} alt={item.name} className="modal-sun-food" />
             </div>
 
             {sidePositions.map((pos) => (
@@ -343,7 +344,7 @@ const FoodDetailModal = ({ item, onClose, addToCart }) => {
                 style={pos.style}
                 data-tooltip={pos.side.name + (pos.side.price > 0 ? ` (+AED ${pos.side.price.toFixed(2)})` : ' (Included)')}
               >
-                <img src={pos.side.image} alt={pos.side.name} className="modal-planet-side-img" />
+                <img src={getOptimizedImageUrl(pos.side.image, 120)} alt={pos.side.name} className="modal-planet-side-img" />
               </div>
             ))}
           </div>
