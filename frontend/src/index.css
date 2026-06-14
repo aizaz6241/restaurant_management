@@ -1191,9 +1191,15 @@ tr:hover td {
 }
 
 @media print {
-  /* Reset html and body for clean thermal page printing flow */
+  /* Set explicit page size to 80mm width with auto-expanding height to support continuous roll printing */
+  @page {
+    size: 80mm auto;
+    margin: 0 !important;
+  }
+
+  /* Reset html and body to match the 80mm thermal roll size exactly, disabling screen scales */
   html, body {
-    width: 100% !important;
+    width: 80mm !important;
     height: auto !important;
     overflow: visible !important;
     margin: 0 !important;
@@ -1203,19 +1209,19 @@ tr:hover td {
     print-color-adjust: exact !important;
   }
 
-  /* Hide all root and body siblings completely to prevent layout shifting/page break */
+  /* Hide all screen elements (including the main React root wrapper) */
   body > * {
     display: none !important;
   }
   
-  /* Show only the portal print receipt section directly in body */
+  /* Show only the portal print receipt section directly in body, left-aligned to 0,0 */
   body > #print-receipt-section {
     display: block !important;
-    position: relative !important; /* Normal document flow supports page breaks naturally */
-    margin: 0 auto !important; /* Centers receipt within paper boundaries */
-    padding: 4mm 6mm !important; /* Safe padding from thermal paper borders */
-    width: 100% !important;
-    max-width: 72mm !important; /* Standard printable width for 80mm rolls, responsive to smaller screens */
+    position: static !important; /* Normal document flow supports page breaks naturally */
+    margin: 0 !important; /* Keep left-aligned to align perfectly with the thermal print head start */
+    padding: 4mm 6mm !important; /* Safe padding to keep content inside printable area */
+    width: 80mm !important; /* Explicitly lock to 80mm page width */
+    max-width: 80mm !important;
     background: #ffffff !important;
     font-family: 'Courier New', Courier, monospace !important;
     font-size: 12px !important;
@@ -1279,12 +1285,6 @@ tr:hover td {
     margin: 0 auto 5px auto !important;
     max-width: 60px !important;
     filter: grayscale(100%) contrast(200%) !important;
-  }
-  
-  /* Remove browser headers, footers and default margins */
-  @page {
-    size: auto;
-    margin: 0;
   }
 }
 
