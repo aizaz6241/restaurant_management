@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
-import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter } from 'react-icons/fi';
+import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter, FiSearch, FiCalendar } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
 import api from '../../utils/api';
 import logoImg from '../../assets/logo.jpg';
@@ -11,6 +11,9 @@ const statusOptions = ['Pending', 'Approved', 'Preparing', 'On the Way', 'Delive
 const OrdersManager = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   
   // Modals state
   const [editOrder, setEditOrder] = useState(null);
@@ -154,21 +157,101 @@ const OrdersManager = () => {
     });
   };
 
-  const filteredOrders = filter === 'All' ? orders : orders.filter(o => o.status === filter);
+  const filteredOrders = orders.filter(order => {
+    // 1. Status Filter
+    const matchesStatus = filter === 'All' || order.status === filter;
+    
+    // 2. Search Query Filter
+    const query = searchQuery.toLowerCase().trim();
+    const matchesSearch = !query || 
+      order.trackingNumber.toLowerCase().includes(query) ||
+      order.customerName.toLowerCase().includes(query) ||
+      order.phoneNumber.includes(query) ||
+      order.items.some(item => item.name.toLowerCase().includes(query));
+      
+    // 3. Date Range Filter
+    let matchesDate = true;
+    if (startDate || endDate) {
+      const orderDate = new Date(order.createdAt);
+      const orderDateString = orderDate.toISOString().split('T')[0];
+      
+      if (startDate && orderDateString < startDate) {
+        matchesDate = false;
+      }
+      if (endDate && orderDateString > endDate) {
+        matchesDate = false;
+      }
+    }
+    
+    return matchesStatus && matchesSearch && matchesDate;
+  });
 
   return (
     <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
         <h1 style={{ margin: 0 }}>Manage Orders</h1>
-        <select 
-          className="input-field" 
-          style={{ width: '200px' }} 
-          value={filter} 
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="All">All Orders</option>
-          {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
+      </div>
+
+      {/* Glassmorphism Orders Filter Bar */}
+      <div className="glass" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1.25rem', borderRadius: 'var(--radius-lg)', marginBottom: '1.5rem', alignItems: 'center', border: '1px solid var(--border)' }}>
+        <div style={{ flex: '1', minWidth: '220px', position: 'relative' }}>
+          <FiSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <input 
+            type="text" 
+            placeholder="Search ID, customer name, items, phone..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input-field"
+            style={{ paddingLeft: '35px', width: '100%', margin: 0 }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <FiCalendar style={{ color: 'var(--text-muted)' }} />
+          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>From:</span>
+          <input 
+            type="date" 
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="input-field"
+            style={{ width: '140px', margin: 0, padding: '0.5rem' }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <FiCalendar style={{ color: 'var(--text-muted)' }} />
+          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>To:</span>
+          <input 
+            type="date" 
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="input-field"
+            style={{ width: '140px', margin: 0, padding: '0.5rem' }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <select 
+            className="input-field" 
+            style={{ width: '150px', margin: 0 }} 
+            value={filter} 
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="All">All Statuses</option>
+            {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          {(searchQuery || startDate || endDate || filter !== 'All') && (
+            <button 
+              className="btn btn-outline" 
+              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem', height: '42px' }} 
+              onClick={() => {
+                setSearchQuery('');
+                setStartDate('');
+                setEndDate('');
+                setFilter('All');
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="table-container" style={{ overflowX: 'auto' }}>

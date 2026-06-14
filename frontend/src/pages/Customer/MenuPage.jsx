@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCart } from '../../context/CartContext';
-import { FiPlus, FiAlertCircle, FiTag, FiX } from 'react-icons/fi';
+import { FiPlus, FiAlertCircle, FiTag, FiX, FiSearch } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
 import { getOptimizedImageUrl } from '../../utils/imageOptimizer';
 
 const MenuPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -37,15 +38,43 @@ const MenuPage = () => {
   // Extract unique categories dynamically from database items
   const categories = ['All', ...new Set(items.map(item => item.category).filter(Boolean))];
 
-  // Split items into Deals and Standard Items for better presentation, filtered by category
-  const deals = items.filter(item => item.isDeal && (activeCategory === 'All' || item.category === activeCategory));
-  const standardItems = items.filter(item => !item.isDeal && (activeCategory === 'All' || item.category === activeCategory));
+  // Filter items by category AND search query
+  const filteredItems = items.filter(item => {
+    const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+    const matchesSearch = !searchQuery || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  // Split items into Deals and Standard Items for better presentation
+  const deals = filteredItems.filter(item => item.isDeal);
+  const standardItems = filteredItems.filter(item => !item.isDeal);
 
   return (
     <div className="container" style={{ paddingTop: '8rem', paddingBottom: '4rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '3rem', marginBottom: '1rem', fontFamily: 'Outfit', fontWeight: 'bold' }}>Our Menu</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem' }}>Discover our wide range of delicious items and combo deals.</p>
+      </div>
+
+      {/* Customer Menu Search Bar */}
+      <div className="menu-search-container animate-fade-in">
+        <div style={{ position: 'relative' }}>
+          <FiSearch className="menu-search-icon" />
+          <input 
+            type="text" 
+            placeholder="Search our menu (e.g. Naan, Tikka, Kabab)..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="menu-search-input"
+          />
+          {searchQuery && (
+            <button className="menu-search-clear" onClick={() => setSearchQuery('')}>
+              <FiX size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Dynamic Category Filter Bar */}
