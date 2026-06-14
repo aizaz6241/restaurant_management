@@ -24,6 +24,7 @@ const OrdersManager = () => {
   const [isPrinterDevice, setIsPrinterDevice] = useState(() => localStorage.getItem('isPrinterDevice') === 'true');
   const [autoPrintOnAck, setAutoPrintOnAck] = useState(() => localStorage.getItem('autoPrintOnAck') !== 'false');
   const [autoPrintOnNew, setAutoPrintOnNew] = useState(() => localStorage.getItem('autoPrintOnNew') === 'true');
+  const [showPrintSettings, setShowPrintSettings] = useState(false);
   
   const printedOrderIds = useRef(new Set());
 
@@ -223,53 +224,64 @@ const OrdersManager = () => {
   return (
     <div className="animate-fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.5rem' }}>
-        <h1 style={{ margin: 0 }}>Manage Orders</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <h1 style={{ margin: 0 }}>Manage Orders</h1>
+          <button 
+            className="btn btn-outline" 
+            onClick={() => setShowPrintSettings(!showPrintSettings)}
+            style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', height: '36px', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+          >
+            ⚙️ Printer Settings
+          </button>
+        </div>
         
         {/* Local Printer Settings */}
-        <div className="glass" style={{ display: 'flex', gap: '1rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', alignItems: 'center', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
-            <span>🖨️ Printer Settings:</span>
+        {showPrintSettings && (
+          <div className="glass animate-fade-in" style={{ display: 'flex', gap: '1rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', alignItems: 'center', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
+              <span>🖨️ Printer Settings:</span>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={isPrinterDevice} 
+                onChange={(e) => {
+                  setIsPrinterDevice(e.target.checked);
+                  localStorage.setItem('isPrinterDevice', e.target.checked);
+                }} 
+              />
+              Connect printer (BILL)
+            </label>
+            {isPrinterDevice && (
+              <>
+                <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={autoPrintOnAck} 
+                    onChange={(e) => {
+                      setAutoPrintOnAck(e.target.checked);
+                      localStorage.setItem('autoPrintOnAck', e.target.checked);
+                    }} 
+                  />
+                  Auto-Print on Acknowledge
+                </label>
+                <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={autoPrintOnNew} 
+                    onChange={(e) => {
+                      setAutoPrintOnNew(e.target.checked);
+                      localStorage.setItem('autoPrintOnNew', e.target.checked);
+                    }} 
+                  />
+                  Auto-Print on New Order
+                </label>
+              </>
+            )}
           </div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
-            <input 
-              type="checkbox" 
-              checked={isPrinterDevice} 
-              onChange={(e) => {
-                setIsPrinterDevice(e.target.checked);
-                localStorage.setItem('isPrinterDevice', e.target.checked);
-              }} 
-            />
-            Connect printer (BILL)
-          </label>
-          {isPrinterDevice && (
-            <>
-              <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
-                <input 
-                  type="checkbox" 
-                  checked={autoPrintOnAck} 
-                  onChange={(e) => {
-                    setAutoPrintOnAck(e.target.checked);
-                    localStorage.setItem('autoPrintOnAck', e.target.checked);
-                  }} 
-                />
-                Auto-Print on Acknowledge
-              </label>
-              <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
-                <input 
-                  type="checkbox" 
-                  checked={autoPrintOnNew} 
-                  onChange={(e) => {
-                    setAutoPrintOnNew(e.target.checked);
-                    localStorage.setItem('autoPrintOnNew', e.target.checked);
-                  }} 
-                />
-                Auto-Print on New Order
-              </label>
-            </>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Glassmorphism Orders Filter Bar */}
