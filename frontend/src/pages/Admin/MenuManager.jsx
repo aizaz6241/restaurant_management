@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
-import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiPlus, FiSearch } from 'react-icons/fi';
 import { UploadButton } from '../../utils/uploadthing';
 import { compressImageFile } from '../../utils/imageOptimizer';
 
@@ -8,6 +8,8 @@ const MenuManager = () => {
   const [items, setItems] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('All'); // 'All', 'Available', 'Unavailable'
   
   const [sidesList, setSidesList] = useState([]);
   const [formData, setFormData] = useState({
@@ -106,6 +108,38 @@ const MenuManager = () => {
     }
   };
 
+  const toggleAvailability = async (item) => {
+    try {
+      const updatedItem = { ...item, isAvailable: !item.isAvailable };
+      const normalizedDealItems = item.dealItems ? item.dealItems.map(d => ({
+        menuItem: d.menuItem._id || d.menuItem,
+        quantity: d.quantity
+      })) : [];
+      const normalizedSides = item.sides ? item.sides.map(s => s._id || s) : [];
+
+      const payload = {
+        ...updatedItem,
+        dealItems: normalizedDealItems,
+        sides: normalizedSides
+      };
+
+      await api.put(`/api/menu/${item._id}`, payload);
+      setItems(prev => prev.map(i => i._id === item._id ? { ...i, isAvailable: !item.isAvailable } : i));
+    } catch (error) {
+      console.error('Error toggling availability:', error);
+    }
+  };
+
+  const filteredItems = items.filter(item => {
+    const matchesFilter = filter === 'All' || 
+      (filter === 'Available' && item.isAvailable) || 
+      (filter === 'Unavailable' && !item.isAvailable);
+    const matchesSearch = !searchQuery || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
   const handleDealItemToggle = (menuItemId) => {
     setFormData(prev => {
       const exists = prev.dealItems.find(d => d.menuItem === menuItemId);
@@ -158,6 +192,56 @@ const MenuManager = () => {
           </button>
         </div>
 
+        {/* Availability and Search Filters */}
+        <div className="glass" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', padding: '1.25rem', borderRadius: 'var(--radius-lg)', marginBottom: '1.5rem', alignItems: 'center', border: '1px solid var(--border)' }}>
+          <div style={{ flex: '1', minWidth: '220px', position: 'relative' }}>
+            <FiSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <input 
+              type="text" 
+              placeholder="Search by food name or category..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-field"
+              style={{ paddingLeft: '35px', width: '100%', margin: 0 }}
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button 
+              className={`btn ${filter === 'All' ? 'btn-primary' : 'btn-outline'}`} 
+              onClick={() => setFilter('All')}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', height: '38px', borderRadius: 'var(--radius-full)' }}
+            >
+              All Items
+            </button>
+            <button 
+              className={`btn ${filter === 'Available' ? 'btn-primary' : 'btn-outline'}`} 
+              onClick={() => setFilter('Available')}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', height: '38px', borderRadius: 'var(--radius-full)' }}
+            >
+              Available
+            </button>
+            <button 
+              className={`btn ${filter === 'Unavailable' ? 'btn-primary' : 'btn-outline'}`} 
+              onClick={() => setFilter('Unavailable')}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', height: '38px', borderRadius: 'var(--radius-full)' }}
+            >
+              Not Available
+            </button>
+            {(searchQuery || filter !== 'All') && (
+              <button 
+                className="btn btn-outline" 
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', height: '38px', borderRadius: 'var(--radius-full)' }} 
+                onClick={() => {
+                  setSearchQuery('');
+                  setFilter('All');
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="table-container">
           <table>
             <thead>
@@ -171,7 +255,7 @@ const MenuManager = () => {
               </tr>
             </thead>
             <tbody>
-              {items.map(item => (
+              {filteredItems.map(item => (
                 <tr key={item._id}>
                   <td>
                     <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
@@ -197,9 +281,34 @@ const MenuManager = () => {
                     )}
                   </td>
                   <td>
-                    <span className={`badge badge-${item.isAvailable ? 'success' : 'danger'}`}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); toggleAvailability(item); }}
+                      style={{
+                        padding: '0.4rem 0.8rem',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold',
+                        background: item.isAvailable ? '#d1fae5' : '#fde8e8',
+                        color: item.isAvailable ? '#059669' : '#e11d48',
+                        border: `1px solid ${item.isAvailable ? '#34d399' : '#fca5a5'}`,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: 'var(--shadow-sm)',
+                      }}
+                      title="Click to toggle availability"
+                    >
+                      <span style={{ 
+                        width: '6px', 
+                        height: '6px', 
+                        borderRadius: '50%', 
+                        background: item.isAvailable ? '#10b981' : '#ef4444',
+                        display: 'inline-block' 
+                      }}></span>
                       {item.isAvailable ? 'Available' : 'Out of Stock'}
-                    </span>
+                    </button>
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -209,7 +318,7 @@ const MenuManager = () => {
                   </td>
                 </tr>
               ))}
-              {items.length === 0 && (
+              {filteredItems.length === 0 && (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No menu items found.</td>
                 </tr>
