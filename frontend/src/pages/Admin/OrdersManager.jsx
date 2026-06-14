@@ -430,22 +430,26 @@ const OrdersManager = () => {
             )}
           </div>
 
-          <div style={{ borderBottom: '1px dashed black', paddingBottom: '5px', marginBottom: '5px', fontSize: '12px' }}>
+          <div style={{ borderBottom: '1px dashed black', paddingBottom: '5px', marginBottom: '10px', fontSize: '12px' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid black' }}>
-                  <th style={{ textAlign: 'left', paddingBottom: '3px', width: '75%' }}>Item Description</th>
-                  <th style={{ textAlign: 'right', paddingBottom: '3px', width: '25%' }}>Price</th>
+                  <th style={{ textAlign: 'left', padding: '5px', width: '55%', border: '1px solid black' }}>Item Description</th>
+                  <th style={{ textAlign: 'center', padding: '5px', width: '15%', border: '1px solid black' }}>Qty</th>
+                  <th style={{ textAlign: 'right', padding: '5px', width: '30%', border: '1px solid black' }}>Price</th>
                 </tr>
               </thead>
               <tbody>
                 {orderToPrint.items.map((item, index) => (
                   <tr key={index}>
-                    <td style={{ paddingTop: '5px', width: '75%', wordBreak: 'break-word' }}>
-                      {item.quantity}x {item.name}
-                      {item.version && <span style={{ fontSize: '10px', color: '#000000', display: 'block' }}>({item.version})</span>}
+                    <td style={{ padding: '5px', width: '55%', wordBreak: 'break-word', border: '1px solid black' }}>
+                      {item.name}
+                      {item.version && <span style={{ fontSize: '10px', color: '#000000', display: 'block', fontWeight: 'bold' }}>({item.version})</span>}
                     </td>
-                    <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px', width: '25%', wordBreak: 'break-all' }}>
+                    <td style={{ textAlign: 'center', padding: '5px', width: '15%', border: '1px solid black', verticalAlign: 'middle' }}>
+                      {item.quantity}
+                    </td>
+                    <td style={{ textAlign: 'right', verticalAlign: 'middle', padding: '5px', width: '30%', border: '1px solid black', whiteSpace: 'nowrap' }}>
                       AED {(item.price * item.quantity).toFixed(2)}
                     </td>
                   </tr>
@@ -507,22 +511,26 @@ const OrdersManager = () => {
                 )}
               </div>
 
-              <div style={{ borderBottom: '1px dashed #777', paddingBottom: '5px', marginBottom: '5px', fontSize: '11px' }}>
+              <div style={{ borderBottom: '1px dashed #777', paddingBottom: '5px', marginBottom: '10px', fontSize: '11px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #777' }}>
-                      <th style={{ textAlign: 'left', paddingBottom: '3px', width: '75%' }}>Item Description</th>
-                      <th style={{ textAlign: 'right', paddingBottom: '3px', width: '25%' }}>Price</th>
+                      <th style={{ textAlign: 'left', padding: '4px', width: '55%', border: '1px solid #777' }}>Item Description</th>
+                      <th style={{ textAlign: 'center', padding: '4px', width: '15%', border: '1px solid #777' }}>Qty</th>
+                      <th style={{ textAlign: 'right', padding: '4px', width: '30%', border: '1px solid #777' }}>Price</th>
                     </tr>
                   </thead>
                   <tbody>
                     {previewOrder.items.map((item, index) => (
                       <tr key={index}>
-                        <td style={{ paddingTop: '5px', width: '75%', wordBreak: 'break-word' }}>
-                          {item.quantity}x {item.name}
-                          {item.version && <span style={{ fontSize: '9px', color: '#000000', display: 'block' }}>({item.version})</span>}
+                        <td style={{ padding: '4px', width: '55%', wordBreak: 'break-word', border: '1px solid #777' }}>
+                          {item.name}
+                          {item.version && <span style={{ fontSize: '9px', color: '#000000', display: 'block', fontWeight: 'bold' }}>({item.version})</span>}
                         </td>
-                        <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px', width: '25%', wordBreak: 'break-all' }}>
+                        <td style={{ textAlign: 'center', padding: '4px', width: '15%', border: '1px solid #777', verticalAlign: 'middle' }}>
+                          {item.quantity}
+                        </td>
+                        <td style={{ textAlign: 'right', verticalAlign: 'middle', padding: '4px', width: '30%', border: '1px solid #777', whiteSpace: 'nowrap' }}>
                           AED {(item.price * item.quantity).toFixed(2)}
                         </td>
                       </tr>
