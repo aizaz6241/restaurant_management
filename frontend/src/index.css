@@ -1191,46 +1191,97 @@ tr:hover td {
 }
 
 @media print {
-  body * {
-    visibility: hidden !important;
-  }
-  #print-receipt-section, #print-receipt-section * {
-    visibility: visible !important;
-    color: #000000 !important; /* Force pure black text */
-    font-weight: bold !important; /* Force bold weight for crisp printing */
-    box-sizing: border-box !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
-  #print-receipt-section {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
+  /* Reset html and body for clean thermal page printing flow */
+  html, body {
     width: 100% !important;
-    max-width: 76mm !important; /* Safe zone inside 80mm roll, scales to 58mm */
+    height: auto !important;
+    overflow: visible !important;
     margin: 0 !important;
-    padding: 8px !important;
-    background: white !important;
-    font-family: 'Courier New', Courier, monospace !important;
-    font-size: 13px !important;
-    line-height: 1.35 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  #print-receipt-section table {
-    width: 100% !important;
-    table-layout: auto !important;
-  }
-  #print-receipt-section td, #print-receipt-section th {
-    word-wrap: break-word !important;
-    word-break: break-word !important;
-    white-space: normal !important;
-  }
-  #print-receipt-section img {
-    filter: grayscale(100%) contrast(200%) !important; /* Force high contrast logo */
-    max-width: 60px !important;
+
+  /* Hide all root and body siblings completely to prevent layout shifting/page break */
+  body > * {
+    display: none !important;
   }
   
-  /* Disable page headers, footers and default margins */
+  /* Show only the portal print receipt section directly in body */
+  body > #print-receipt-section {
+    display: block !important;
+    position: relative !important; /* Normal document flow supports page breaks naturally */
+    margin: 0 auto !important; /* Centers receipt within paper boundaries */
+    padding: 4mm 6mm !important; /* Safe padding from thermal paper borders */
+    width: 100% !important;
+    max-width: 72mm !important; /* Standard printable width for 80mm rolls, responsive to smaller screens */
+    background: #ffffff !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  
+  /* Force all receipt elements to render crisp bold black for high contrast */
+  #print-receipt-section, #print-receipt-section * {
+    visibility: visible !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+  }
+
+  /* Prevent headings and blocks from breaking awkwardly across physical pages */
+  #print-receipt-section h2,
+  #print-receipt-section h3,
+  #print-receipt-section h4,
+  #print-receipt-section p,
+  #print-receipt-section tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  #print-receipt-section table {
+    display: table !important;
+    width: 100% !important;
+    table-layout: fixed !important; /* Helps enforce columns widths strictly */
+    border-collapse: collapse !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  #print-receipt-section thead {
+    display: table-header-group !important;
+  }
+  
+  #print-receipt-section tbody {
+    display: table-row-group !important;
+  }
+  
+  #print-receipt-section tr {
+    display: table-row !important;
+  }
+  
+  #print-receipt-section td {
+    display: table-cell !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+  
+  #print-receipt-section th {
+    display: table-cell !important;
+    font-weight: bold !important;
+  }
+
+  #print-receipt-section img {
+    display: block !important;
+    margin: 0 auto 5px auto !important;
+    max-width: 60px !important;
+    filter: grayscale(100%) contrast(200%) !important;
+  }
+  
+  /* Remove browser headers, footers and default margins */
   @page {
     size: auto;
     margin: 0;

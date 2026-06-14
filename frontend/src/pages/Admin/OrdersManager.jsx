@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
@@ -399,7 +400,7 @@ const OrdersManager = () => {
       )}
 
       {/* Hidden POS Receipt for Print Dialog */}
-      {orderToPrint && (
+      {orderToPrint && createPortal(
         <div id="print-receipt-section">
           <div style={{ textAlign: 'center', marginBottom: '10px' }}>
             <img 
@@ -433,18 +434,18 @@ const OrdersManager = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid black' }}>
-                  <th style={{ textAlign: 'left', paddingBottom: '3px' }}>Item Description</th>
-                  <th style={{ textAlign: 'right', paddingBottom: '3px' }}>Price</th>
+                  <th style={{ textAlign: 'left', paddingBottom: '3px', width: '75%' }}>Item Description</th>
+                  <th style={{ textAlign: 'right', paddingBottom: '3px', width: '25%' }}>Price</th>
                 </tr>
               </thead>
               <tbody>
                 {orderToPrint.items.map((item, index) => (
                   <tr key={index}>
-                    <td style={{ paddingTop: '5px' }}>
+                    <td style={{ paddingTop: '5px', width: '75%', wordBreak: 'break-word' }}>
                       {item.quantity}x {item.name}
-                      {item.version && <span style={{ fontSize: '10px', color: '#555', display: 'block' }}>({item.version})</span>}
+                      {item.version && <span style={{ fontSize: '10px', color: '#000000', display: 'block' }}>({item.version})</span>}
                     </td>
-                    <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px' }}>
+                    <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px', width: '25%', wordBreak: 'break-all' }}>
                       AED {(item.price * item.quantity).toFixed(2)}
                     </td>
                   </tr>
@@ -461,7 +462,8 @@ const OrdersManager = () => {
             Thank you for ordering!<br />
             Afghani hospitality at its finest.
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Receipt Preview Modal */}
@@ -509,18 +511,18 @@ const OrdersManager = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #777' }}>
-                      <th style={{ textAlign: 'left', paddingBottom: '3px' }}>Item Description</th>
-                      <th style={{ textAlign: 'right', paddingBottom: '3px' }}>Price</th>
+                      <th style={{ textAlign: 'left', paddingBottom: '3px', width: '75%' }}>Item Description</th>
+                      <th style={{ textAlign: 'right', paddingBottom: '3px', width: '25%' }}>Price</th>
                     </tr>
                   </thead>
                   <tbody>
                     {previewOrder.items.map((item, index) => (
                       <tr key={index}>
-                        <td style={{ paddingTop: '5px' }}>
+                        <td style={{ paddingTop: '5px', width: '75%', wordBreak: 'break-word' }}>
                           {item.quantity}x {item.name}
-                          {item.version && <span style={{ fontSize: '9px', color: '#666', display: 'block' }}>({item.version})</span>}
+                          {item.version && <span style={{ fontSize: '9px', color: '#000000', display: 'block' }}>({item.version})</span>}
                         </td>
-                        <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px' }}>
+                        <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px', width: '25%', wordBreak: 'break-all' }}>
                           AED {(item.price * item.quantity).toFixed(2)}
                         </td>
                       </tr>
