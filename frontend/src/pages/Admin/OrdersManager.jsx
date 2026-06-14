@@ -28,7 +28,7 @@ const OrdersManager = () => {
   const printedOrderIds = useRef(new Set());
 
   const getOrderPrintKey = (order) => {
-    return `${order._id}-${order.items.length}-${order.totalAmount}-${order.isAcknowledged}`;
+    return `${order._id}-${order.items.length}-${order.totalAmount}`;
   };
 
   const fetchOrders = async () => {
