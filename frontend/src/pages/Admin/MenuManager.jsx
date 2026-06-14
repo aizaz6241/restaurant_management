@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
-import { FiEdit2, FiTrash2, FiPlus, FiSearch } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiPlus, FiSearch, FiX } from 'react-icons/fi';
 import { UploadButton } from '../../utils/uploadthing';
 import { compressImageFile } from '../../utils/imageOptimizer';
 
@@ -8,6 +8,8 @@ const MenuManager = () => {
   const [items, setItems] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [bulkModalVisible, setBulkModalVisible] = useState(false);
+  const [bulkSearchQuery, setBulkSearchQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('All'); // 'All', 'Available', 'Unavailable'
   
@@ -185,11 +187,20 @@ const MenuManager = () => {
   return (
     <>
       <div className="animate-fade-in">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <h1>Menu Management</h1>
-          <button className="btn btn-primary" onClick={() => { resetForm(); setFormVisible(true); }}>
-            <FiPlus /> Add New Item
-          </button>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button 
+              className="btn btn-outline" 
+              onClick={() => { setBulkSearchQuery(''); setBulkModalVisible(true); }}
+              style={{ borderColor: 'var(--primary)', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              Add to Not Available List
+            </button>
+            <button className="btn btn-primary" onClick={() => { resetForm(); setFormVisible(true); }} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <FiPlus /> Add New Item
+            </button>
+          </div>
         </div>
 
         {/* Availability and Search Filters */}
@@ -496,6 +507,121 @@ const MenuManager = () => {
                 <button type="submit" className="btn btn-primary">{editingId ? 'Update Item' : 'Save Item'}</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {bulkModalVisible && (
+        <div className="admin-modal-overlay" onClick={() => setBulkModalVisible(false)}>
+          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '750px', width: '90%', display: 'flex', flexDirection: 'column', maxHeight: '85vh', padding: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontFamily: 'Outfit', fontSize: '1.5rem', color: 'var(--primary-dark)' }}>Stock Availability Manager</h3>
+              <button className="btn-icon" onClick={() => setBulkModalVisible(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {/* Modal Search Bar */}
+            <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+              <FiSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text" 
+                placeholder="Search item name or category to toggle stock..." 
+                value={bulkSearchQuery}
+                onChange={(e) => setBulkSearchQuery(e.target.value)}
+                className="input-field"
+                style={{ paddingLeft: '35px', width: '100%', margin: 0 }}
+              />
+            </div>
+
+            {/* Scrollable Items List */}
+            <div style={{ overflowY: 'auto', flex: 1, paddingRight: '0.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', minHeight: '200px' }}>
+              {items
+                .filter(item => {
+                  const query = bulkSearchQuery.toLowerCase().trim();
+                  return !query || 
+                    item.name.toLowerCase().includes(query) || 
+                    item.category.toLowerCase().includes(query);
+                })
+                .map(item => (
+                  <div 
+                    key={item._id} 
+                    style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      padding: '0.75rem 1rem', 
+                      border: '1px solid var(--border)', 
+                      borderRadius: 'var(--radius-md)', 
+                      background: item.isAvailable ? 'rgba(16, 185, 129, 0.02)' : 'rgba(239, 68, 68, 0.02)',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        style={{ width: '45px', height: '45px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} 
+                      />
+                      <div>
+                        <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{item.name}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{item.category}</div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => toggleAvailability(item)}
+                      style={{
+                        padding: '0.45rem 1rem',
+                        borderRadius: 'var(--radius-full)',
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        transition: 'all 0.2s ease',
+                        border: '1px solid',
+                        boxShadow: 'var(--shadow-sm)',
+                        background: item.isAvailable ? '#d1fae5' : '#fde8e8',
+                        color: item.isAvailable ? '#059669' : '#e11d48',
+                        borderColor: item.isAvailable ? '#34d399' : '#fca5a5',
+                      }}
+                    >
+                      <span style={{ 
+                        width: '6px', 
+                        height: '6px', 
+                        borderRadius: '50%', 
+                        background: item.isAvailable ? '#10b981' : '#ef4444',
+                        display: 'inline-block' 
+                      }}></span>
+                      {item.isAvailable ? 'Available' : 'Out of Stock'}
+                    </button>
+                  </div>
+                ))}
+              
+              {items.filter(item => {
+                const query = bulkSearchQuery.toLowerCase().trim();
+                return !query || 
+                  item.name.toLowerCase().includes(query) || 
+                  item.category.toLowerCase().includes(query);
+              }).length === 0 && (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                  No matching menu items found.
+                </div>
+              )}
+            </div>
+
+            {/* Done button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setBulkModalVisible(false)}
+                style={{ padding: '0.5rem 2rem' }}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}
