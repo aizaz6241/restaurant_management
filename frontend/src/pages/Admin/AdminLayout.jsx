@@ -12,6 +12,17 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unacknowledgedIds, setUnacknowledgedIds] = useState([]);
+  const [isAlertVisible, setIsAlertVisible] = useState(true);
+  const [dismissedCount, setDismissedCount] = useState(0);
+
+  useEffect(() => {
+    if (unacknowledgedIds.length > dismissedCount) {
+      setIsAlertVisible(true);
+    } else if (unacknowledgedIds.length === 0) {
+      setIsAlertVisible(false);
+      setDismissedCount(0);
+    }
+  }, [unacknowledgedIds, dismissedCount]);
 
   useEffect(() => {
     // Fetch initial unacknowledged orders to restore alarm state on refresh
@@ -162,6 +173,87 @@ const AdminLayout = () => {
       <main className="admin-content">
         <Outlet />
       </main>
+
+      {/* Floating Warning Alert for Unacknowledged Orders (for broken speakers) */}
+      {unacknowledgedIds.length > 0 && isAlertVisible && (
+        <div 
+          className="glass new-order-alert-banner"
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            padding: '1.25rem',
+            borderRadius: 'var(--radius-lg)',
+            border: '2px solid var(--danger)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            maxWidth: '350px',
+            background: 'rgba(254, 242, 242, 0.95)',
+            color: '#991b1b',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            animation: 'pulse-border 1.5s infinite alternate'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1.1rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>🚨</span>
+            New Order Warning!
+          </div>
+          <p style={{ margin: 0, fontSize: '0.9rem', color: '#7f1d1d', lineHeight: '1.4' }}>
+            You have <strong>{unacknowledgedIds.length}</strong> new unacknowledged order(s) waiting. Please check the orders list.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {location.pathname !== '/admin/orders' && (
+              <button 
+                className="btn" 
+                style={{ 
+                  background: 'var(--danger)', 
+                  color: 'white', 
+                  border: 'none', 
+                  padding: '0.45rem 0.8rem', 
+                  borderRadius: 'var(--radius-sm)', 
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  flex: 1
+                }}
+                onClick={() => {
+                  setIsAlertVisible(false);
+                  setDismissedCount(unacknowledgedIds.length);
+                  navigate('/admin/orders');
+                }}
+              >
+                View Orders
+              </button>
+            )}
+            <button 
+              className="btn btn-outline" 
+              style={{ 
+                borderColor: '#b91c1c', 
+                color: '#b91c1c', 
+                padding: '0.45rem 0.8rem', 
+                borderRadius: 'var(--radius-sm)', 
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                flex: 1
+              }}
+              onClick={() => {
+                setIsAlertVisible(false);
+                setDismissedCount(unacknowledgedIds.length);
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+          <style>{`
+            @keyframes pulse-border {
+              0% { box-shadow: 0 0 0 0px rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 0.8); }
+              100% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); border-color: rgba(239, 68, 68, 1); }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 };

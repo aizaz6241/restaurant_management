@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter, FiSearch, FiCalendar } from 'react-icons/fi';
@@ -21,6 +21,16 @@ const OrdersManager = () => {
   const [orderToPrint, setOrderToPrint] = useState(null);
   const [previewOrder, setPreviewOrder] = useState(null);
 
+  const [isPrinterDevice, setIsPrinterDevice] = useState(() => localStorage.getItem('isPrinterDevice') === 'true');
+  const [autoPrintOnAck, setAutoPrintOnAck] = useState(() => localStorage.getItem('autoPrintOnAck') !== 'false');
+  const [autoPrintOnNew, setAutoPrintOnNew] = useState(() => localStorage.getItem('autoPrintOnNew') === 'true');
+  
+  const printedOrderIds = useRef(new Set());
+
+  const getOrderPrintKey = (order) => {
+    return `${order._id}-${order.items.length}-${order.totalAmount}-${order.isAcknowledged}`;
+  };
+
   const fetchOrders = async () => {
     try {
       const { data } = await api.get('/api/orders');
@@ -40,6 +50,13 @@ const OrdersManager = () => {
         if (prev.some(o => o._id === newOrder._id)) return prev;
         return [newOrder, ...prev];
       });
+
+      // Auto print new orders
+      const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
+      const autoPrintNew = localStorage.getItem('autoPrintOnNew') === 'true';
+      if (isPrinter && autoPrintNew) {
+        triggerPrint(newOrder);
+      }
     });
 
     socket.on('orderEditedByCustomer', (updatedOrder) => {
@@ -52,6 +69,13 @@ const OrdersManager = () => {
 
     socket.on('orderAcknowledged', (updatedOrder) => {
       setOrders(prev => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o));
+
+      // Auto print acknowledged orders
+      const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
+      const autoPrintAck = localStorage.getItem('autoPrintOnAck') !== 'false';
+      if (isPrinter && autoPrintAck) {
+        triggerPrint(updatedOrder);
+      }
     });
 
     socket.on('orderDeleted', (deletedId) => {
@@ -70,6 +94,15 @@ const OrdersManager = () => {
   }, []);
 
   const triggerPrint = (order) => {
+    if (localStorage.getItem('isPrinterDevice') !== 'true') return;
+    
+    const printKey = getOrderPrintKey(order);
+    if (printedOrderIds.current.has(printKey)) {
+      console.log('Order already printed, skipping:', order.trackingNumber);
+      return;
+    }
+    printedOrderIds.current.add(printKey);
+
     setOrderToPrint(order);
     setTimeout(() => {
       window.print();
@@ -77,6 +110,8 @@ const OrdersManager = () => {
   };
 
   const handleManualPrint = (order) => {
+    const printKey = getOrderPrintKey(order);
+    printedOrderIds.current.delete(printKey);
     triggerPrint(order);
   };
 
@@ -93,7 +128,6 @@ const OrdersManager = () => {
     try {
       const { data } = await api.put(`/api/orders/${id}/acknowledge`);
       setOrders(prev => prev.map(o => o._id === id ? data : o));
-      triggerPrint(data);
     } catch (error) {
       console.error('Error acknowledging order:', error);
     }
@@ -188,8 +222,54 @@ const OrdersManager = () => {
 
   return (
     <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.5rem' }}>
         <h1 style={{ margin: 0 }}>Manage Orders</h1>
+        
+        {/* Local Printer Settings */}
+        <div className="glass" style={{ display: 'flex', gap: '1rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', alignItems: 'center', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 'bold', color: 'var(--primary-dark)' }}>
+            <span>🖨️ Printer Settings:</span>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+            <input 
+              type="checkbox" 
+              checked={isPrinterDevice} 
+              onChange={(e) => {
+                setIsPrinterDevice(e.target.checked);
+                localStorage.setItem('isPrinterDevice', e.target.checked);
+              }} 
+            />
+            Connect printer (BILL)
+          </label>
+          {isPrinterDevice && (
+            <>
+              <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={autoPrintOnAck} 
+                  onChange={(e) => {
+                    setAutoPrintOnAck(e.target.checked);
+                    localStorage.setItem('autoPrintOnAck', e.target.checked);
+                  }} 
+                />
+                Auto-Print on Acknowledge
+              </label>
+              <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={autoPrintOnNew} 
+                  onChange={(e) => {
+                    setAutoPrintOnNew(e.target.checked);
+                    localStorage.setItem('autoPrintOnNew', e.target.checked);
+                  }} 
+                />
+                Auto-Print on New Order
+              </label>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Glassmorphism Orders Filter Bar */}
@@ -327,14 +407,16 @@ const OrdersManager = () => {
                         {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
 
-                      <button 
-                        onClick={() => setPreviewOrder(order)}
-                        className="btn btn-outline"
-                        style={{ padding: '0.4rem', color: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        title="View & Print Receipt"
-                      >
-                        <FiPrinter size={14} />
-                      </button>
+                      {isPrinterDevice && (
+                        <button 
+                          onClick={() => setPreviewOrder(order)}
+                          className="btn btn-outline"
+                          style={{ padding: '0.4rem', color: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title="View & Print Receipt"
+                        >
+                          <FiPrinter size={14} />
+                        </button>
+                      )}
 
                       <button 
                         onClick={() => setEditOrder(order)}
