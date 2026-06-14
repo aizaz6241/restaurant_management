@@ -11,4 +11,4 @@ echo Operating Site URL: https://restaurant-management-mkrr.onrender.com/admin/o
 echo.
 echo Press any key to launch Chrome...
 pause > nul
-start chrome --kiosk-printing --user-data-dir="%temp%\ChromeSilentPrintProfile" "https://restaurant-management-mkrr.onrender.com/admin/orders"
+start chrome --kiosk-printing --no-first-run --no-default-browser-check --user-data-dir="%temp%\ChromeSilentPrintProfile" "https://restaurant-management-mkrr.onrender.com/admin/orders"
