@@ -248,8 +248,8 @@ const customerAddItems = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
-      if (order.status !== 'Pending') {
-        return res.status(400).json({ message: 'Order can only be modified while in Pending status.' });
+      if (order.isAcknowledged) {
+        return res.status(400).json({ message: 'Order can only be modified before it is acknowledged by the restaurant.' });
       }
 
       const oldAmount = order.totalAmount;
@@ -315,9 +315,6 @@ const acknowledgeOrder = async (req, res) => {
     if (order) {
       const oldStatus = order.status;
       order.isAcknowledged = true;
-      if (order.status === 'Pending') {
-        order.status = 'Approved';
-      }
       const updatedOrder = await order.save();
 
       // Save audit log
@@ -329,7 +326,7 @@ const acknowledgeOrder = async (req, res) => {
         details: {
           oldStatus,
           newStatus: order.status,
-          status: 'Acknowledged & Approved'
+          status: 'Acknowledged'
         }
       });
       await log.save();

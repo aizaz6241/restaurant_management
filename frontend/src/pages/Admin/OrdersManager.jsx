@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../../config';
 import api from '../../utils/api';
 import logoImg from '../../assets/logo.jpg';
 
-const statusOptions = ['Pending', 'Approved', 'Preparing', 'On the Way', 'Delivered', 'Cancelled'];
+const statusOptions = ['Preparing', 'Delivered', 'Cancelled'];
 
 const OrdersManager = () => {
   const [orders, setOrders] = useState([]);
@@ -269,7 +269,7 @@ const OrdersManager = () => {
           </thead>
           <tbody>
             {filteredOrders.map(order => {
-              const isUnread = !order.isAcknowledged && order.status === 'Pending';
+              const isUnread = !order.isAcknowledged && order.status === 'Preparing';
               return (
                 <tr key={order._id} className={isUnread ? 'unread-order-row' : ''}>
                   <td>
@@ -301,7 +301,7 @@ const OrdersManager = () => {
                   <td style={{ fontWeight: 'bold', color: 'var(--primary)' }}>AED {order.totalAmount.toFixed(2)}</td>
                   <td>{new Date(order.createdAt).toLocaleString()}</td>
                   <td>
-                    <span className={`badge badge-${order.status === 'Pending' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>
+                    <span className={`badge badge-${order.status === 'Preparing' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>
                       {order.status}
                     </span>
                   </td>

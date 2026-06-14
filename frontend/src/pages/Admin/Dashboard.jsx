@@ -88,7 +88,7 @@ const Dashboard = () => {
   // 1. Stats Calculations
   const totalOrders = orders.length;
   const totalRevenue = orders.reduce((sum, order) => order.status !== 'Cancelled' ? sum + order.totalAmount : sum, 0);
-  const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+  const preparingOrders = orders.filter(o => o.status === 'Preparing').length;
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   // Sort orders by newest first (Today's orders at top)
@@ -242,7 +242,7 @@ const Dashboard = () => {
 
   // 6. Order Status Breakdown (Doughnut Chart)
   const getStatusStats = () => {
-    const counts = { Pending: 0, Approved: 0, Preparing: 0, 'On the Way': 0, Delivered: 0, Cancelled: 0 };
+    const counts = { Preparing: 0, Delivered: 0, Cancelled: 0 };
     orders.forEach(o => {
       if (counts[o.status] !== undefined) {
         counts[o.status]++;
@@ -261,10 +261,7 @@ const Dashboard = () => {
       {
         data: statusStats.data,
         backgroundColor: [
-          'rgba(251, 191, 36, 0.85)', // Pending (Amber)
-          'rgba(96, 165, 250, 0.85)',  // Approved (Blue)
-          'rgba(129, 140, 248, 0.85)', // Preparing (Indigo)
-          'rgba(167, 139, 250, 0.85)', // On the Way (Purple)
+          'rgba(251, 191, 36, 0.85)',  // Preparing (Amber)
           'rgba(52, 211, 153, 0.85)',  // Delivered (Green)
           'rgba(248, 113, 113, 0.85)'  // Cancelled (Red)
         ],
@@ -303,8 +300,8 @@ const Dashboard = () => {
             <FiTrendingUp />
           </div>
           <div className="stat-info">
-            <h3>Pending Orders</h3>
-            <p>{pendingOrders}</p>
+            <h3>Preparing Orders</h3>
+            <p>{preparingOrders}</p>
           </div>
         </div>
         <div className="stat-card">
@@ -444,7 +441,7 @@ const Dashboard = () => {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontWeight: 'bold', margin: 0 }}>AED {order.totalAmount.toFixed(2)}</p>
-                    <span className={`badge badge-${order.status === 'Pending' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`} style={{ marginTop: '5px', display: 'inline-block' }}>
+                    <span className={`badge badge-${order.status === 'Preparing' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`} style={{ marginTop: '5px', display: 'inline-block' }}>
                       {order.status}
                     </span>
                   </div>

@@ -6,7 +6,7 @@ import { FiSearch, FiCheckCircle, FiChevronDown, FiChevronUp, FiX, FiPlus, FiMin
 import { API_BASE_URL } from '../../config';
 import { getOptimizedImageUrl } from '../../utils/imageOptimizer';
 
-const statusSteps = ['Pending', 'Approved', 'Preparing', 'On the Way', 'Delivered'];
+const statusSteps = ['Preparing', 'Delivered'];
 
 const Tracking = () => {
   const { trackingNumber } = useParams();
@@ -231,7 +231,7 @@ const Tracking = () => {
                   <div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.2rem' }}>Status</div>
                     <div>
-                      <span className={`badge badge-${order.status === 'Pending' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>
+                      <span className={`badge badge-${order.status === 'Preparing' ? 'warning' : order.status === 'Cancelled' ? 'danger' : 'success'}`}>
                         {order.status}
                       </span>
                     </div>
@@ -280,7 +280,7 @@ const Tracking = () => {
                   <div style={{ marginTop: '2.5rem', borderTop: '1px dashed var(--border)', paddingTop: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <h4 style={{ margin: 0, color: 'var(--primary-dark)', fontFamily: 'Outfit', fontWeight: 'bold' }}>Items Ordered</h4>
-                      {order.status === 'Pending' && (
+                      {!order.isAcknowledged && order.status === 'Preparing' && (
                         <button 
                           className="btn btn-primary btn-sm"
                           style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
