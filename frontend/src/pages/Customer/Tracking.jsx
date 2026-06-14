@@ -60,11 +60,15 @@ const Tracking = () => {
 
   useEffect(() => {
     const socket = io(API_BASE_URL);
-    socket.on('orderStatusUpdated', (updatedOrder) => {
+    
+    const handleOrderUpdate = (updatedOrder) => {
       setOrders(prevOrders => 
         prevOrders.map(o => (o._id === updatedOrder._id ? updatedOrder : o))
       );
-    });
+    };
+
+    socket.on('orderStatusUpdated', handleOrderUpdate);
+    socket.on('orderAcknowledged', handleOrderUpdate);
 
     return () => socket.disconnect();
   }, []);
@@ -320,8 +324,14 @@ const Tracking = () => {
       </div>
 
       {/* Customer Add Items Modal */}
-      {addItemsOrder && (
-        <div className="modal-overlay open" onClick={() => setAddItemsOrder(null)}>
+      {addItemsOrder && (() => {
+        const liveOrder = orders.find(o => o._id === addItemsOrder._id);
+        if (!liveOrder || liveOrder.isAcknowledged) {
+          setTimeout(() => setAddItemsOrder(null), 0);
+          return null;
+        }
+        return (
+          <div className="modal-overlay open" onClick={() => setAddItemsOrder(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '940px', display: 'grid' }}>
             {/* Left Column: Menu Catalog */}
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '0' }}>
@@ -520,7 +530,8 @@ const Tracking = () => {
             </button>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
