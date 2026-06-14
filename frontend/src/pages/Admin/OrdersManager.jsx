@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle } from 'react-icons/fi';
+import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter } from 'react-icons/fi';
 import { API_BASE_URL } from '../../config';
 import api from '../../utils/api';
+import logoImg from '../../assets/logo.jpg';
 
 const statusOptions = ['Pending', 'Approved', 'Preparing', 'On the Way', 'Delivered', 'Cancelled'];
 
@@ -13,6 +14,8 @@ const OrdersManager = () => {
   // Modals state
   const [editOrder, setEditOrder] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [orderToPrint, setOrderToPrint] = useState(null);
+  const [previewOrder, setPreviewOrder] = useState(null);
 
   const fetchOrders = async () => {
     try {
@@ -54,6 +57,25 @@ const OrdersManager = () => {
     return () => socket.disconnect();
   }, []);
 
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setOrderToPrint(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
+
+  const triggerPrint = (order) => {
+    setOrderToPrint(order);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handleManualPrint = (order) => {
+    triggerPrint(order);
+  };
+
   const handleStatusChange = async (id, newStatus) => {
     try {
       const { data } = await api.put(`/api/orders/${id}/status`, { status: newStatus });
@@ -67,6 +89,7 @@ const OrdersManager = () => {
     try {
       const { data } = await api.put(`/api/orders/${id}/acknowledge`);
       setOrders(prev => prev.map(o => o._id === id ? data : o));
+      triggerPrint(data);
     } catch (error) {
       console.error('Error acknowledging order:', error);
     }
@@ -221,6 +244,15 @@ const OrdersManager = () => {
                       </select>
 
                       <button 
+                        onClick={() => setPreviewOrder(order)}
+                        className="btn btn-outline"
+                        style={{ padding: '0.4rem', color: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="View & Print Receipt"
+                      >
+                        <FiPrinter size={14} />
+                      </button>
+
+                      <button 
                         onClick={() => setEditOrder(order)}
                         className="btn btn-outline"
                         style={{ padding: '0.4rem', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -361,6 +393,161 @@ const OrdersManager = () => {
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
               <button className="btn btn-outline" onClick={() => setDeleteId(null)}>Cancel</button>
               <button className="btn btn-primary" style={{ background: 'var(--danger)', borderColor: 'var(--danger)', padding: '0.5rem 1.5rem' }} onClick={handleDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Hidden POS Receipt for Print Dialog */}
+      {orderToPrint && (
+        <div id="print-receipt-section">
+          <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+            <img 
+              src={logoImg} 
+              alt="Sher Afghan Logo" 
+              style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', display: 'block', margin: '0 auto 5px auto' }}
+            />
+            <h2 style={{ margin: '0 0 5px 0', fontSize: '18px', fontWeight: 'bold', textTransform: 'uppercase' }}>Sher Afghan</h2>
+            <p style={{ margin: '0', fontSize: '12px' }}>Afghani & Traditional Cuisine</p>
+          </div>
+
+          <div style={{ borderTop: '1px dashed black', borderBottom: '1px dashed black', padding: '5px 0', marginBottom: '10px', fontSize: '12px' }}>
+            <div><strong>RECEIPT ID:</strong> {orderToPrint.trackingNumber}</div>
+            <div><strong>DATE:</strong> {new Date(orderToPrint.createdAt).toLocaleString()}</div>
+            <div><strong>STATUS:</strong> {orderToPrint.status}</div>
+          </div>
+
+          <div style={{ marginBottom: '10px', fontSize: '12px' }}>
+            <h4 style={{ margin: '0 0 5px 0', fontSize: '13px', textTransform: 'uppercase', borderBottom: '1px solid black', display: 'inline-block' }}>Customer Info</h4>
+            <div><strong>Name:</strong> {orderToPrint.customerName}</div>
+            <div><strong>Phone:</strong> {orderToPrint.phoneNumber}</div>
+            {orderToPrint.address && (
+              <div style={{ marginTop: '3px' }}>
+                <strong>Delivery Location:</strong>
+                <div style={{ fontStyle: 'italic', paddingLeft: '5px', wordBreak: 'break-word' }}>{orderToPrint.address}</div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ borderBottom: '1px dashed black', paddingBottom: '5px', marginBottom: '5px', fontSize: '12px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid black' }}>
+                  <th style={{ textAlign: 'left', paddingBottom: '3px' }}>Item Description</th>
+                  <th style={{ textAlign: 'right', paddingBottom: '3px' }}>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderToPrint.items.map((item, index) => (
+                  <tr key={index}>
+                    <td style={{ paddingTop: '5px' }}>
+                      {item.quantity}x {item.name}
+                      {item.version && <span style={{ fontSize: '10px', color: '#555', display: 'block' }}>({item.version})</span>}
+                    </td>
+                    <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px' }}>
+                      AED {(item.price * item.quantity).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ textAlign: 'right', fontSize: '13px', fontWeight: 'bold', marginTop: '5px' }}>
+            TOTAL AMOUNT: AED {orderToPrint.totalAmount.toFixed(2)}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '15px', fontSize: '11px', borderTop: '1px dashed black', paddingTop: '10px' }}>
+            Thank you for ordering!<br />
+            Afghani hospitality at its finest.
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Preview Modal */}
+      {previewOrder && (
+        <div className="modal-overlay open" onClick={() => setPreviewOrder(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', display: 'block', padding: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+              <h2 style={{ margin: 0, fontFamily: 'Outfit', fontSize: '1.35rem' }}>Receipt: {previewOrder.trackingNumber}</h2>
+              <button className="btn-icon" onClick={() => setPreviewOrder(null)}>
+                <FiX size={20} />
+              </button>
+            </div>
+
+            {/* Receipt Preview Container (with Courier style) */}
+            <div className="receipt-preview-container" style={{ marginBottom: '1.5rem' }}>
+              <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                <img 
+                  src={logoImg} 
+                  alt="Sher Afghan Logo" 
+                  style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', display: 'block', margin: '0 auto 5px auto' }}
+                />
+                <h3 style={{ margin: '0 0 3px 0', fontSize: '15px', fontWeight: 'bold', textTransform: 'uppercase' }}>Sher Afghan</h3>
+                <p style={{ margin: '0', fontSize: '11px', color: '#555' }}>Afghani & Traditional Cuisine</p>
+              </div>
+
+              <div style={{ borderTop: '1px dashed #777', borderBottom: '1px dashed #777', padding: '5px 0', marginBottom: '10px', fontSize: '11px' }}>
+                <div><strong>RECEIPT ID:</strong> {previewOrder.trackingNumber}</div>
+                <div><strong>DATE:</strong> {new Date(previewOrder.createdAt).toLocaleString()}</div>
+                <div><strong>STATUS:</strong> {previewOrder.status}</div>
+              </div>
+
+              <div style={{ marginBottom: '10px', fontSize: '11px' }}>
+                <div style={{ fontWeight: 'bold', textTransform: 'uppercase', borderBottom: '1px solid #777', paddingBottom: '2px', marginBottom: '3px', display: 'inline-block' }}>Customer Info</div>
+                <div><strong>Name:</strong> {previewOrder.customerName}</div>
+                <div><strong>Phone:</strong> {previewOrder.phoneNumber}</div>
+                {previewOrder.address && (
+                  <div style={{ marginTop: '3px' }}>
+                    <strong>Delivery Location:</strong>
+                    <div style={{ fontStyle: 'italic', paddingLeft: '5px', wordBreak: 'break-word' }}>{previewOrder.address}</div>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ borderBottom: '1px dashed #777', paddingBottom: '5px', marginBottom: '5px', fontSize: '11px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #777' }}>
+                      <th style={{ textAlign: 'left', paddingBottom: '3px' }}>Item Description</th>
+                      <th style={{ textAlign: 'right', paddingBottom: '3px' }}>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previewOrder.items.map((item, index) => (
+                      <tr key={index}>
+                        <td style={{ paddingTop: '5px' }}>
+                          {item.quantity}x {item.name}
+                          {item.version && <span style={{ fontSize: '9px', color: '#666', display: 'block' }}>({item.version})</span>}
+                        </td>
+                        <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '5px' }}>
+                          AED {(item.price * item.quantity).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style={{ textAlign: 'right', fontSize: '12px', fontWeight: 'bold', marginTop: '5px' }}>
+                TOTAL AMOUNT: AED {previewOrder.totalAmount.toFixed(2)}
+              </div>
+
+              <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '10px', borderTop: '1px dashed #777', paddingTop: '8px', color: '#555' }}>
+                Thank you for ordering!<br />
+                Afghani hospitality at its finest.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+              <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setPreviewOrder(null)}>Close</button>
+              <button 
+                className="btn btn-primary" 
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} 
+                onClick={() => handleManualPrint(previewOrder)}
+              >
+                <FiPrinter size={16} /> Print
+              </button>
             </div>
           </div>
         </div>

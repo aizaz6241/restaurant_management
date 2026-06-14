@@ -1184,3 +1184,50 @@ tr:hover td {
     margin-bottom: -1.5rem !important;
   }
 }
+
+/* POS Receipt Printing Styles */
+#print-receipt-section {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #print-receipt-section, #print-receipt-section * {
+    visibility: visible !important;
+  }
+  #print-receipt-section {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    margin: 0;
+    padding: 10px;
+    background: white !important;
+    color: black !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Disable page headers, footers and default margins */
+  @page {
+    size: auto;
+    margin: 0;
+  }
+}
+
+/* Receipt Modal Preview container screen styles */
+.receipt-preview-container {
+  font-family: 'Courier New', Courier, monospace;
+  background: #fbfbfb;
+  border: 1px solid #e0e0e0;
+  padding: 1.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+  color: black;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+  line-height: 1.4;
+}
