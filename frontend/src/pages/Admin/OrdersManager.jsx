@@ -23,7 +23,6 @@ const OrdersManager = () => {
 
   const [isPrinterDevice, setIsPrinterDevice] = useState(() => localStorage.getItem('isPrinterDevice') === 'true');
   const [autoPrintOnAck, setAutoPrintOnAck] = useState(() => localStorage.getItem('autoPrintOnAck') !== 'false');
-  const [autoPrintOnNew, setAutoPrintOnNew] = useState(() => localStorage.getItem('autoPrintOnNew') === 'true');
   const [showPrintSettings, setShowPrintSettings] = useState(false);
   
   const printedOrderIds = useRef(new Set());
@@ -51,13 +50,6 @@ const OrdersManager = () => {
         if (prev.some(o => o._id === newOrder._id)) return prev;
         return [newOrder, ...prev];
       });
-
-      // Auto print new orders
-      const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
-      const autoPrintNew = localStorage.getItem('autoPrintOnNew') === 'true';
-      if (isPrinter && autoPrintNew) {
-        triggerPrint(newOrder);
-      }
     });
 
     socket.on('orderEditedByCustomer', (updatedOrder) => {
@@ -265,18 +257,6 @@ const OrdersManager = () => {
                     }} 
                   />
                   Auto-Print on Acknowledge
-                </label>
-                <div style={{ borderLeft: '1px solid var(--border)', height: '15px' }}></div>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={autoPrintOnNew} 
-                    onChange={(e) => {
-                      setAutoPrintOnNew(e.target.checked);
-                      localStorage.setItem('autoPrintOnNew', e.target.checked);
-                    }} 
-                  />
-                  Auto-Print on New Order
                 </label>
               </>
             )}

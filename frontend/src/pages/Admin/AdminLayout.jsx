@@ -4,7 +4,7 @@ import { FiHome, FiList, FiPackage, FiMenu, FiX, FiGrid, FiLogOut } from 'react-
 import { io } from 'socket.io-client';
 import logoImg from '../../assets/logo.jpg';
 import { API_BASE_URL } from '../../config';
-import { playLoudChime, showDesktopNotification } from '../../utils/audioAlert';
+import { playLoudChime, showDesktopNotification, startSilentAudioLoop } from '../../utils/audioAlert';
 import api from '../../utils/api';
 
 const AdminLayout = () => {
@@ -14,6 +14,27 @@ const AdminLayout = () => {
   const [unacknowledgedIds, setUnacknowledgedIds] = useState([]);
   const [isAlertVisible, setIsAlertVisible] = useState(true);
   const [dismissedCount, setDismissedCount] = useState(0);
+
+  // Setup silent audio loop wake-lock on first user interaction to bypass autoplay policy
+  useEffect(() => {
+    const initWakeLock = () => {
+      startSilentAudioLoop();
+      window.removeEventListener('click', initWakeLock);
+      window.removeEventListener('keydown', initWakeLock);
+      window.removeEventListener('touchstart', initWakeLock);
+    };
+
+    window.addEventListener('click', initWakeLock);
+    window.addEventListener('keydown', initWakeLock);
+    window.addEventListener('touchstart', initWakeLock);
+
+    return () => {
+      window.removeEventListener('click', initWakeLock);
+      window.removeEventListener('keydown', initWakeLock);
+      window.removeEventListener('touchstart', initWakeLock);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (unacknowledgedIds.length > dismissedCount) {

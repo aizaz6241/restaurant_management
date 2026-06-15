@@ -65,3 +65,34 @@ export const showDesktopNotification = (order) => {
     });
   }
 };
+
+let silentAudioCtx = null;
+let silentOscillator = null;
+
+export const startSilentAudioLoop = () => {
+  try {
+    if (silentAudioCtx) return; // Already initialized
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    silentAudioCtx = new AudioContext();
+    
+    const osc = silentAudioCtx.createOscillator();
+    const gain = silentAudioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1, silentAudioCtx.currentTime); // 1 Hz
+    gain.gain.setValueAtTime(0.0001, silentAudioCtx.currentTime); // Almost zero volume
+
+    osc.connect(gain);
+    gain.connect(silentAudioCtx.destination);
+
+    osc.start();
+    silentOscillator = osc;
+    console.log('Silent audio wake-lock loop initialized.');
+  } catch (error) {
+    console.error('Silent audio wake-lock initialization failed:', error);
+  }
+};
+
