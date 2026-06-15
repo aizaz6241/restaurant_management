@@ -21,10 +21,25 @@ const OrdersManager = () => {
   const [orderToPrint, setOrderToPrint] = useState(null);
   const [previewOrder, setPreviewOrder] = useState(null);
 
-  const [isPrinterDevice, setIsPrinterDevice] = useState(() => localStorage.getItem('isPrinterDevice') === 'true');
-  const [autoPrintOnAck, setAutoPrintOnAck] = useState(() => localStorage.getItem('autoPrintOnAck') !== 'false');
+  const [isPrinterDevice, setIsPrinterDevice] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('isPrinter') === 'true') {
+      localStorage.setItem('isPrinterDevice', 'true');
+      return true;
+    }
+    return localStorage.getItem('isPrinterDevice') === 'true';
+  });
+  const [autoPrintOnAck, setAutoPrintOnAck] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('isPrinter') === 'true') {
+      localStorage.setItem('autoPrintOnAck', 'true');
+      return true;
+    }
+    return localStorage.getItem('autoPrintOnAck') !== 'false';
+  });
   const [showPrintSettings, setShowPrintSettings] = useState(false);
   
+  const socketRef = useRef(null);
   const printedOrderIds = useRef(new Set());
 
   const getOrderPrintKey = (order) => {
@@ -44,6 +59,7 @@ const OrdersManager = () => {
     fetchOrders();
 
     const socket = io(API_BASE_URL);
+    socketRef.current = socket;
     
     socket.on('newOrder', (newOrder) => {
       setOrders(prev => {
@@ -71,11 +87,24 @@ const OrdersManager = () => {
       }
     });
 
+    socket.on('triggerManualPrint', (order) => {
+      const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
+      if (isPrinter) {
+        console.log('Received manual print request via socket, triggering print.');
+        const printKey = getOrderPrintKey(order);
+        printedOrderIds.current.delete(printKey);
+        triggerPrint(order);
+      }
+    });
+
     socket.on('orderDeleted', (deletedId) => {
       setOrders(prev => prev.filter(o => o._id !== deletedId));
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
@@ -103,9 +132,17 @@ const OrdersManager = () => {
   };
 
   const handleManualPrint = (order) => {
-    const printKey = getOrderPrintKey(order);
-    printedOrderIds.current.delete(printKey);
-    triggerPrint(order);
+    const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
+    if (isPrinter) {
+      const printKey = getOrderPrintKey(order);
+      printedOrderIds.current.delete(printKey);
+      triggerPrint(order);
+    } else {
+      if (socketRef.current) {
+        console.log('Sending manual print request to print-server.');
+        socketRef.current.emit('requestManualPrint', order);
+      }
+    }
   };
 
   const handleStatusChange = async (id, newStatus) => {

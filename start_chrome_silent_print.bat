@@ -12,4 +12,4 @@ echo Operating Site URL: https://restaurant-management-mkrr.onrender.com/admin/o
 echo.
 echo Press any key to launch Edge...
 pause > nul
-start msedge --kiosk-printing --no-first-run --no-default-browser-check --user-data-dir="%temp%\EdgeSilentPrintProfile" "https://restaurant-management-mkrr.onrender.com/admin/orders"
+start msedge --kiosk-printing --no-first-run --no-default-browser-check --user-data-dir="%temp%\EdgeSilentPrintProfile" "https://restaurant-management-mkrr.onrender.com/admin/orders?isPrinter=true"

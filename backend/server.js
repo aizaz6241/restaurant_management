@@ -36,6 +36,12 @@ app.set('socketio', io);
 
 io.on('connection', (socket) => {
   console.log(`Socket connected: ${socket.id}`);
+  
+  socket.on('requestManualPrint', (order) => {
+    console.log(`Manual print request received for order: ${order.trackingNumber}`);
+    io.emit('triggerManualPrint', order);
+  });
+
   socket.on('disconnect', () => {
     console.log(`Socket disconnected: ${socket.id}`);
   });
