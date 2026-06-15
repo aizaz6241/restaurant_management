@@ -8,6 +8,8 @@ import logoImg from '../../assets/logo.jpg';
 
 const statusOptions = ['Preparing', 'Delivered', 'Cancelled'];
 
+const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 const OrdersManager = () => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('All');
@@ -56,6 +58,10 @@ const OrdersManager = () => {
   };
 
   useEffect(() => {
+    if (isMobile) {
+      localStorage.removeItem('isPrinterDevice');
+      localStorage.removeItem('autoPrintOnAck');
+    }
     fetchOrders();
 
     const socket = io(API_BASE_URL);
@@ -116,6 +122,7 @@ const OrdersManager = () => {
   }, []);
 
   const triggerPrint = (order) => {
+    if (isMobile) return; // Mobile/Tablets should never trigger local window.print()
     if (localStorage.getItem('isPrinterDevice') !== 'true') return;
     
     const printKey = getOrderPrintKey(order);
@@ -133,7 +140,7 @@ const OrdersManager = () => {
 
   const handleManualPrint = (order) => {
     const isPrinter = localStorage.getItem('isPrinterDevice') === 'true';
-    if (isPrinter) {
+    if (isPrinter && !isMobile) {
       const printKey = getOrderPrintKey(order);
       printedOrderIds.current.delete(printKey);
       triggerPrint(order);
@@ -255,13 +262,15 @@ const OrdersManager = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <h1 style={{ margin: 0 }}>Manage Orders</h1>
-          <button 
-            className="btn btn-outline" 
-            onClick={() => setShowPrintSettings(!showPrintSettings)}
-            style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', height: '36px', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
-          >
-            ⚙️ Printer Settings
-          </button>
+          {!isMobile && (
+            <button 
+              className="btn btn-outline" 
+              onClick={() => setShowPrintSettings(!showPrintSettings)}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', height: '36px', display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+            >
+              ⚙️ Printer Settings
+            </button>
+          )}
         </div>
         
         {/* Local Printer Settings */}
