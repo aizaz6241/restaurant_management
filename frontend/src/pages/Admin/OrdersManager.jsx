@@ -436,16 +436,14 @@ const OrdersManager = () => {
                         {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
 
-                      {isPrinterDevice && (
-                        <button 
-                          onClick={() => setPreviewOrder(order)}
-                          className="btn btn-outline"
-                          style={{ padding: '0.4rem', color: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title="View & Print Receipt"
-                        >
-                          <FiPrinter size={14} />
-                        </button>
-                      )}
+                      <button 
+                        onClick={() => setPreviewOrder(order)}
+                        className="btn btn-outline"
+                        style={{ padding: '0.4rem', color: 'var(--primary)', borderColor: 'var(--primary)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="View & Print Receipt"
+                      >
+                        <FiPrinter size={14} />
+                      </button>
 
                       <button 
                         onClick={() => setEditOrder(order)}
