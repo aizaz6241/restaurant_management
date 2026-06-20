@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
                                     loadWithOverviewMode = true
                                     useWideViewPort = true
                                     javaScriptCanOpenWindowsAutomatically = true
+                                    userAgentString = userAgentString + " SherAfghanApp"
                                 }
                                 
                                 webView = this
