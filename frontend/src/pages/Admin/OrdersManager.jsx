@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import { FiCheck, FiEdit2, FiTrash2, FiX, FiPlus, FiAlertCircle, FiPrinter, FiSearch, FiCalendar } from 'react-icons/fi';
@@ -11,6 +12,7 @@ const statusOptions = ['Preparing', 'Delivered', 'Cancelled'];
 const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 const OrdersManager = () => {
+  const { setUnacknowledgedIds } = useOutletContext() || {};
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -165,6 +167,9 @@ const OrdersManager = () => {
     try {
       const { data } = await api.put(`/api/orders/${id}/acknowledge`);
       setOrders(prev => prev.map(o => o._id === id ? data : o));
+      if (setUnacknowledgedIds) {
+        setUnacknowledgedIds(prev => prev.filter(item => item !== id));
+      }
     } catch (error) {
       console.error('Error acknowledging order:', error);
     }

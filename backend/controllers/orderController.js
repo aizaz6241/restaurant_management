@@ -248,8 +248,8 @@ const customerAddItems = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
-      if (order.isAcknowledged) {
-        return res.status(400).json({ message: 'Order can only be modified before it is acknowledged by the restaurant.' });
+      if (order.status !== 'Preparing') {
+        return res.status(400).json({ message: 'Order can only be modified while it is being prepared.' });
       }
 
       const oldAmount = order.totalAmount;

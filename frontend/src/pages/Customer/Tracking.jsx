@@ -284,7 +284,7 @@ const Tracking = () => {
                   <div style={{ marginTop: '2.5rem', borderTop: '1px dashed var(--border)', paddingTop: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <h4 style={{ margin: 0, color: 'var(--primary-dark)', fontFamily: 'Outfit', fontWeight: 'bold' }}>Items Ordered</h4>
-                      {!order.isAcknowledged && order.status === 'Preparing' && (
+                      {order.status === 'Preparing' && (
                         <button 
                           className="btn btn-primary btn-sm"
                           style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
@@ -326,7 +326,7 @@ const Tracking = () => {
       {/* Customer Add Items Modal */}
       {addItemsOrder && (() => {
         const liveOrder = orders.find(o => o._id === addItemsOrder._id);
-        if (!liveOrder || liveOrder.isAcknowledged) {
+        if (!liveOrder || liveOrder.status !== 'Preparing') {
           setTimeout(() => setAddItemsOrder(null), 0);
           return null;
         }

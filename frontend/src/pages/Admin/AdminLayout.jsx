@@ -46,11 +46,11 @@ const AdminLayout = () => {
   }, [unacknowledgedIds, dismissedCount]);
 
   useEffect(() => {
-    // Fetch initial unacknowledged orders to restore alarm state on refresh
     const fetchInitialAlerts = async () => {
       try {
         const { data } = await api.get('/api/orders');
-        const unreadIds = data.filter(o => !o.isAcknowledged && o.status === 'Preparing').map(o => o._id);
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const unreadIds = data.filter(o => !o.isAcknowledged && o.status === 'Preparing' && new Date(o.createdAt) > twentyFourHoursAgo).map(o => o._id);
         setUnacknowledgedIds(unreadIds);
       } catch (err) {
         console.error('Error fetching initial unread orders:', err);
@@ -58,12 +58,20 @@ const AdminLayout = () => {
     };
     fetchInitialAlerts();
 
-    // Request browser notification permission if not already requested
+    const syncInterval = setInterval(() => {
+      fetchInitialAlerts();
+    }, 15000);
+
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
 
     const socket = io(API_BASE_URL);
+
+    socket.on('connect', () => {
+      console.log('Socket connected/reconnected. Syncing unacknowledged orders...');
+      fetchInitialAlerts();
+    });
 
     socket.on('newOrder', (newOrder) => {
       setUnacknowledgedIds(prev => {
@@ -100,7 +108,10 @@ const AdminLayout = () => {
       setUnacknowledgedIds(prev => prev.filter(id => id !== deletedId));
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+      clearInterval(syncInterval);
+    };
   }, []);
 
   // Audio Loop: Trigger chime sound repeatedly while unacknowledged alerts exist
@@ -192,7 +203,7 @@ const AdminLayout = () => {
       </aside>
       
       <main className="admin-content">
-        <Outlet />
+        <Outlet context={{ unacknowledgedIds, setUnacknowledgedIds }} />
       </main>
 
       {/* Floating Warning Alert for Unacknowledged Orders (for broken speakers) */}
