@@ -1,4 +1,9 @@
 export const playLoudChime = () => {
+  // If running inside the Android App WebView, let the native ForegroundService handle alarm sounds
+  if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.includes('SherAfghanApp')) {
+    console.log('Chime silenced in WebView. Handled by Android Foreground Service.');
+    return;
+  }
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
