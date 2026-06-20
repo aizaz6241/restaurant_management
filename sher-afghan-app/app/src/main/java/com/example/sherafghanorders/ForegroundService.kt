@@ -8,6 +8,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
@@ -163,20 +164,26 @@ class ForegroundService : Service() {
         updateNotification("🚨 NEW ORDER ALERT!", "There is an unacknowledged order. Please check!")
         
         try {
+            // Set device alarm stream volume to max
+            val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        
+        try {
             if (mediaPlayer == null) {
-                val alertUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                
-                mediaPlayer = MediaPlayer().apply {
-                    setDataSource(applicationContext, alertUri)
+                // Play raw bell WAV resource
+                mediaPlayer = MediaPlayer.create(applicationContext, R.raw.bell).apply {
                     setAudioAttributes(
                         AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_ALARM)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                             .build()
                     )
                     isLooping = true
-                    prepare()
+                    setVolume(1.0f, 1.0f) // Max volume within player
                 }
             }
             mediaPlayer?.start()
